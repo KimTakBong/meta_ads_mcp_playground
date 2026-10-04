@@ -15,8 +15,7 @@ export default function CampaignsPage() {
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">ads_get_ad_entities • level: campaign</p>
           </div>
           <DevLink clipboards={[
-            { title: 'Campaigns', toolName: 'ads_get_ad_entities', schema: campaignSchema, data: campaigns },
-            { title: 'Ad Sets', toolName: 'ads_get_ad_entities', schema: adSetSchema, data: adSets }
+            { title: 'Campaigns List', toolName: 'ads_get_ad_entities', schema: campaignSchema, data: campaigns }
           ]}>
             <span className="font-mono">&lt;dev&gt;</span>
           </DevLink>

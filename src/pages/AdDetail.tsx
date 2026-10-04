@@ -22,8 +22,7 @@ export default function AdDetail() {
         <div className="flex items-center gap-2">
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{ad.ad_name}</h2>
           <DevLink clipboards={[
-            { title: 'Ad Data', toolName: 'ads_get_ad_entities', schema: adSchema, data: ad },
-            { title: 'Creative Details', toolName: 'ads_get_ad_entities', schema: adSchema.creative, data: ad.creative }
+            { title: 'Ad Data', toolName: 'ads_get_ad_entities', schema: adSchema, data: ad }
           ]}>
             <span className="font-mono">&lt;dev&gt;</span>
           </DevLink>

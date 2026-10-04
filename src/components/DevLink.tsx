@@ -52,10 +52,16 @@ export default function DevLink({ children, clipboards }: DevLinkProps) {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {clipboards.map((item, index) => (
-                <ClipboardPanel key={index} item={item} />
-              ))}
+            <div className="flex-1 overflow-y-auto p-4">
+              {clipboards.length === 1 ? (
+                <ClipboardPanel item={clipboards[0]} />
+              ) : (
+                <div className="space-y-4">
+                  {clipboards.map((item, index) => (
+                    <ClipboardPanel key={index} item={item} />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
