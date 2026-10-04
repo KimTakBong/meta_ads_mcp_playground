@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-import { campaigns, adSets } from '../data/mockData';
-import { campaignSchema, adSetSchema } from '../data/schemas';
+import { campaigns } from '../data/mockData';
+import { campaignSchema } from '../data/schemas';
 import { formatCurrency, formatNumber, getResults, getCostPerResult, getObjectiveColor, getObjectiveLabel } from '../utils/format';
-import { ExternalLink } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import DevLink from '../components/DevLink';
 
 export default function CampaignsPage() {
@@ -20,10 +20,10 @@ export default function CampaignsPage() {
             <span className="font-mono">&lt;dev&gt;</span>
           </DevLink>
         </div>
-        <button className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors">
-          <ExternalLink className="w-3.5 h-3.5" />
-          Ads Manager
-        </button>
+        <Link to="/campaigns/new" className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors">
+          <Plus className="w-3.5 h-3.5" />
+          Create Campaign
+        </Link>
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden">

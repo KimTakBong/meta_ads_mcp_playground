@@ -11,7 +11,7 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const [sidebarHovered, setSidebarHovered] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const location = useLocation();
 
   useEffect(() => {
@@ -22,6 +22,8 @@ export default function Layout({ children }: LayoutProps) {
   const navItems = [
     { path: '/', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/campaigns', label: 'Campaigns', icon: Megaphone },
+    { path: '/adsets', label: 'Ad Sets', icon: Layers },
+    { path: '/ads', label: 'Ads', icon: Square },
   ];
 
   const isActive = (path: string) => {
