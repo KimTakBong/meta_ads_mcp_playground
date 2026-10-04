@@ -31,7 +31,7 @@ import PlacementsBreakdown from './components/PlacementsBreakdown';
 import { overviewMetrics } from './data/mockData';
 
 export default function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarHovered, setSidebarHovered] = useState(false);
   const [activeNav, setActiveNav] = useState('dashboard');
 
   const formatCurrency = (value: number) => {
@@ -55,70 +55,70 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50/50 flex">
-      {/* Sidebar */}
+      {/* Sidebar - Collapsed by default, expand on hover */}
       <aside
         className={`${
-          sidebarOpen ? 'w-64' : 'w-20'
-        } bg-white border-r border-gray-200 flex flex-col transition-all duration-300 fixed h-full z-30`}
+          sidebarHovered ? 'w-56' : 'w-16'
+        } bg-white border-r border-gray-200 flex flex-col transition-all duration-300 fixed h-full z-30 group/sidebar`}
+        onMouseEnter={() => setSidebarHovered(true)}
+        onMouseLeave={() => setSidebarHovered(false)}
       >
         {/* Logo */}
-        <div className="p-5 border-b border-gray-100">
+        <div className="p-4 border-b border-gray-100">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-200">
-              <BarChart3 className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-md shadow-blue-200 flex-shrink-0">
+              <BarChart3 className="w-4 h-4 text-white" />
             </div>
-            {sidebarOpen && (
-              <div>
-                <h1 className="font-bold text-gray-900 text-sm">Meta Ads</h1>
-                <p className="text-[10px] text-gray-500">Performance Monitor</p>
-              </div>
-            )}
+            <div className={`transition-all duration-300 overflow-hidden whitespace-nowrap ${sidebarHovered ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
+              <h1 className="font-bold text-gray-900 text-sm">Meta Ads</h1>
+              <p className="text-[10px] text-gray-500">Performance Monitor</p>
+            </div>
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-3 space-y-1">
+        <nav className="flex-1 p-2 space-y-1">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveNav(item.id)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              className={`w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeNav === item.id
                   ? 'bg-blue-50 text-blue-700 shadow-sm'
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
               }`}
             >
               <item.icon className="w-5 h-5 flex-shrink-0" />
-              {sidebarOpen && <span>{item.label}</span>}
+              <span className={`transition-all duration-300 overflow-hidden whitespace-nowrap ${sidebarHovered ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
+                {item.label}
+              </span>
             </button>
           ))}
         </nav>
 
         {/* Bottom */}
-        <div className="p-3 border-t border-gray-100 space-y-1">
-          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all">
+        <div className="p-2 border-t border-gray-100 space-y-1">
+          <button className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all">
             <HelpCircle className="w-5 h-5 flex-shrink-0" />
-            {sidebarOpen && <span>Help Center</span>}
+            <span className={`transition-all duration-300 overflow-hidden whitespace-nowrap ${sidebarHovered ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
+              Help Center
+            </span>
           </button>
-          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all">
+          <button className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all">
             <Settings className="w-5 h-5 flex-shrink-0" />
-            {sidebarOpen && <span>Settings</span>}
+            <span className={`transition-all duration-300 overflow-hidden whitespace-nowrap ${sidebarHovered ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
+              Settings
+            </span>
           </button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className={`flex-1 ${sidebarOpen ? 'ml-64' : 'ml-20'} transition-all duration-300`}>
+      <main className={`flex-1 ml-16 transition-all duration-300`}>
         {/* Top Header */}
         <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-20">
           <div className="flex items-center justify-between px-6 py-4">
             <div className="flex items-center gap-4">
-              <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                <BarChart3 className="w-5 h-5 text-gray-600" />
-              </button>
               <div className="relative hidden md:block">
                 <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
@@ -173,28 +173,28 @@ export default function App() {
               title="Amount Spent"
               value={formatCurrency(overviewMetrics.totalSpend)}
               change={8.2}
-              icon={<DollarSign className="w-5 h-5" />}
+              icon={<DollarSign className="w-4 h-4" />}
               subtitle="Total budget terpakai"
             />
             <MetricCard
               title="Impressions"
               value={formatNumber(overviewMetrics.totalImpressions)}
               change={12.5}
-              icon={<Eye className="w-5 h-5" />}
+              icon={<Eye className="w-4 h-4" />}
               subtitle="Total tayangan iklan"
             />
             <MetricCard
               title="Link Clicks"
               value={formatNumber(overviewMetrics.totalLinkClicks)}
               change={5.8}
-              icon={<MousePointerClick className="w-5 h-5" />}
+              icon={<MousePointerClick className="w-4 h-4" />}
               subtitle={`${formatNumber(overviewMetrics.totalAllClicks)} all clicks`}
             />
             <MetricCard
               title="ROAS"
               value={`${overviewMetrics.roas}x`}
               change={15.3}
-              icon={<TrendingUp className="w-5 h-5" />}
+              icon={<TrendingUp className="w-4 h-4" />}
               subtitle="Return on Ad Spend"
             />
           </div>
@@ -205,28 +205,28 @@ export default function App() {
               title="Reach"
               value={formatNumber(overviewMetrics.totalReach)}
               change={9.1}
-              icon={<Users className="w-5 h-5" />}
+              icon={<Users className="w-4 h-4" />}
               subtitle={`Frequency: ${overviewMetrics.frequency}x`}
             />
             <MetricCard
               title="Results (Conversions)"
               value={formatNumber(overviewMetrics.totalResults)}
               change={18.7}
-              icon={<Target className="w-5 h-5" />}
+              icon={<Target className="w-4 h-4" />}
               subtitle={`Cost/result: Rp ${overviewMetrics.avgCostPerResult.toLocaleString('id-ID')}`}
             />
             <MetricCard
               title="Link CTR"
               value={`${overviewMetrics.avgCTR}%`}
               change={3.2}
-              icon={<Zap className="w-5 h-5" />}
+              icon={<Zap className="w-4 h-4" />}
               subtitle={`All CTR: ${overviewMetrics.avgAllCTR}%`}
             />
             <MetricCard
               title="CPC (Link Click)"
               value={`Rp ${overviewMetrics.avgCPC.toLocaleString('id-ID')}`}
               change={-4.5}
-              icon={<DollarSign className="w-5 h-5" />}
+              icon={<DollarSign className="w-4 h-4" />}
               subtitle={`CPM: Rp ${overviewMetrics.avgCPM.toLocaleString('id-ID')}`}
             />
           </div>
