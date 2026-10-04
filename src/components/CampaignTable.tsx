@@ -121,12 +121,12 @@ export default function CampaignTable() {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-      <div className="p-4 border-b border-gray-100">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="p-4 border-b border-gray-100 dark:border-gray-700">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-semibold text-gray-900">Campaign Level</h3>
-            <p className="text-[10px] text-gray-500">ads_get_ad_entities • level: campaign</p>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Campaign Level</h3>
+            <p className="text-[10px] text-gray-500 dark:text-gray-400">ads_get_ad_entities • level: campaign</p>
           </div>
           <button className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-[10px] font-medium hover:bg-blue-700 transition-colors">
             <ExternalLink className="w-3 h-3" />

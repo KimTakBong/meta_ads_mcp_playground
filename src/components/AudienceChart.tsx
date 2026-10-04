@@ -18,10 +18,10 @@ export default function AudienceChart() {
   }));
 
   return (
-    <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
       <div className="mb-3">
-        <h3 className="text-sm font-semibold text-gray-900">Audience Breakdown</h3>
-        <p className="text-[10px] text-gray-500">breakdowns: age, gender</p>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Audience Breakdown</h3>
+        <p className="text-[10px] text-gray-500 dark:text-gray-400">breakdowns: age, gender</p>
       </div>
       <div className="h-40">
         <ResponsiveContainer width="100%" height="100%">
@@ -113,10 +113,10 @@ export function PlatformChart() {
   };
 
   return (
-    <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
       <div className="mb-3">
-        <h3 className="text-sm font-semibold text-gray-900">Publisher Platform</h3>
-        <p className="text-[10px] text-gray-500">breakdowns: publisher_platform</p>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Publisher Platform</h3>
+        <p className="text-[10px] text-gray-500 dark:text-gray-400">breakdowns: publisher_platform</p>
       </div>
       <div className="space-y-3">
         {platformData.map((platform) => (

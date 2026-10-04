@@ -30,11 +30,11 @@ export default function PerformanceChart() {
   }));
 
   return (
-    <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
         <div>
-          <h3 className="text-sm font-semibold text-gray-900">ads_insights_performance_trend</h3>
-          <p className="text-[10px] text-gray-500">time_increment: 1 • date_preset: last_14d</p>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">ads_insights_performance_trend</h3>
+          <p className="text-[10px] text-gray-500 dark:text-gray-400">time_increment: 1 • date_preset: last_14d</p>
         </div>
         <div className="flex flex-wrap gap-1.5 mt-2 sm:mt-0">
           {(Object.keys(metricConfig) as MetricType[]).map((metric) => (

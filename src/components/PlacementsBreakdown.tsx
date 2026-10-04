@@ -11,17 +11,6 @@ const placementLabels: Record<string, string> = {
   'messenger_home': 'Messenger',
 };
 
-const placementIcons: Record<string, string> = {
-  'facebook_feed': '📘',
-  'instagram_feed': '📷',
-  'instagram_reels': '🎬',
-  'facebook_story': '📱',
-  'instagram_story': '📸',
-  'facebook_reels': '🎞️',
-  'audience_network_classic': '🌐',
-  'messenger_home': '💬',
-};
-
 const placementColors: Record<string, string> = {
   'facebook_feed': '#1877f2',
   'instagram_feed': '#e4405f',
@@ -62,11 +51,11 @@ export default function PlacementsBreakdown() {
   };
 
   return (
-    <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-semibold text-gray-900">Breakdown by Placement</h3>
-          <p className="text-[10px] text-gray-500">breakdowns: publisher_platform, platform_position</p>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Breakdown by Placement</h3>
+          <p className="text-[10px] text-gray-500 dark:text-gray-400">breakdowns: publisher_platform, platform_position</p>
         </div>
       </div>
 
@@ -102,30 +91,34 @@ export default function PlacementsBreakdown() {
         {placementsBreakdown.map((placement, i) => {
           const key = getPlacementKey(placement.publisher_platform, placement.platform_position);
           const percentage = ((parseInt(placement.spend) / totalSpend) * 100).toFixed(1);
+          const color = placementColors[key] || '#6b7280';
           return (
             <div
               key={i}
-              className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
-              <div className="text-sm w-6 text-center flex-shrink-0">{placementIcons[key] || '📊'}</div>
+              {/* Colored dot indicator */}
+              <div className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0" style={{ backgroundColor: color + '20' }}>
+                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }}></div>
+              </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-0.5">
-                  <p className="text-[11px] font-medium text-gray-900 truncate">{placementLabels[key] || key}</p>
-                  <span className="text-[11px] font-bold text-gray-900 ml-2">{percentage}%</span>
+                  <p className="text-[11px] font-medium text-gray-900 dark:text-gray-100 truncate">{placementLabels[key] || key}</p>
+                  <span className="text-[11px] font-bold text-gray-900 dark:text-gray-100 ml-2">{percentage}%</span>
                 </div>
-                <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all duration-500"
                     style={{
                       width: `${percentage}%`,
-                      backgroundColor: placementColors[key] || '#6b7280',
+                      backgroundColor: color,
                     }}
                   ></div>
                 </div>
                 <div className="flex items-center gap-3 mt-0.5">
-                  <span className="text-[9px] text-gray-500">{formatNumber(placement.impressions)} impr.</span>
-                  <span className="text-[9px] text-gray-500">{formatNumber(placement.inline_link_clicks)} clicks</span>
-                  <span className="text-[9px] text-gray-500">{formatCurrency(placement.spend)}</span>
+                  <span className="text-[9px] text-gray-500 dark:text-gray-400">{formatNumber(placement.impressions)} impr.</span>
+                  <span className="text-[9px] text-gray-500 dark:text-gray-400">{formatNumber(placement.inline_link_clicks)} clicks</span>
+                  <span className="text-[9px] text-gray-500 dark:text-gray-400">{formatCurrency(placement.spend)}</span>
                 </div>
               </div>
             </div>
