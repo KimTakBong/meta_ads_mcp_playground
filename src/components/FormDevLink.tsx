@@ -75,25 +75,25 @@ export default function FormDevLink({ children, toolName, fields, schema }: Form
             </div>
 
             {/* Content - 2 Columns */}
-            <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-gray-700 overflow-hidden">
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-gray-700 min-h-0">
               {/* Column 1: Schema */}
-              <div className="bg-gray-900 dark:bg-black flex flex-col">
-                <div className="flex items-center justify-between px-3 py-1.5 bg-gray-800 dark:bg-gray-900 border-b border-gray-700 dark:border-gray-800">
+              <div className="bg-gray-900 dark:bg-black flex flex-col min-h-0">
+                <div className="flex items-center justify-between px-3 py-1.5 bg-gray-800 dark:bg-gray-900 border-b border-gray-700 dark:border-gray-800 flex-shrink-0">
                   <div className="flex items-center gap-1.5">
                     <Database className="w-3 h-3 text-emerald-400" />
                     <span className="text-[10px] font-medium text-emerald-400">Schema</span>
                   </div>
                 </div>
-                <div className="flex-1 overflow-y-auto p-3">
-                  <pre className="text-[10px] text-emerald-300 font-mono leading-relaxed whitespace-pre-wrap">
+                <div className="flex-1 overflow-y-auto p-3 min-h-0">
+                  <pre className="text-[11px] text-emerald-300 font-mono leading-relaxed whitespace-pre-wrap">
                     {JSON.stringify(schema, null, 2)}
                   </pre>
                 </div>
               </div>
 
               {/* Column 2: Payload */}
-              <div className="bg-gray-900 dark:bg-black flex flex-col">
-                <div className="flex items-center justify-between px-3 py-1.5 bg-gray-800 dark:bg-gray-900 border-b border-gray-700 dark:border-gray-800">
+              <div className="bg-gray-900 dark:bg-black flex flex-col min-h-0">
+                <div className="flex items-center justify-between px-3 py-1.5 bg-gray-800 dark:bg-gray-900 border-b border-gray-700 dark:border-gray-800 flex-shrink-0">
                   <div className="flex items-center gap-1.5">
                     <FileJson className="w-3 h-3 text-blue-400" />
                     <span className="text-[10px] font-medium text-blue-400">Request Payload</span>
@@ -102,8 +102,8 @@ export default function FormDevLink({ children, toolName, fields, schema }: Form
                     {Object.keys(payload).length} fields
                   </span>
                 </div>
-                <div className="flex-1 overflow-y-auto p-3">
-                  <pre className="text-[10px] font-mono leading-relaxed whitespace-pre-wrap">
+                <div className="flex-1 overflow-y-auto p-3 min-h-0">
+                  <pre className="text-[11px] font-mono leading-relaxed whitespace-pre-wrap">
                     {formatPayloadWithColors(payload, schema)}
                   </pre>
                 </div>

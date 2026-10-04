@@ -52,7 +52,7 @@ export default function DevLink({ children, clipboards }: DevLinkProps) {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-4">
+            <div className="flex-1 overflow-y-auto p-4 min-h-0">
               {clipboards.length === 1 ? (
                 <ClipboardPanel item={clipboards[0]} />
               ) : (
@@ -83,9 +83,9 @@ function ClipboardPanel({ item }: { item: ClipboardItem }) {
   };
 
   return (
-    <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+    <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden h-full flex flex-col">
       {/* Panel Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div className="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         <div className="flex items-center gap-2">
           <span className="text-[11px] font-medium text-gray-900 dark:text-gray-100">{item.title}</span>
           <span className="text-[9px] px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded font-mono">
@@ -95,10 +95,10 @@ function ClipboardPanel({ item }: { item: ClipboardItem }) {
       </div>
 
       {/* 2 Columns */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-gray-700">
+      <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-gray-700 flex-1 min-h-0">
         {/* Column 1: Schema / Structure */}
-        <div className="bg-gray-900 dark:bg-black">
-          <div className="flex items-center justify-between px-3 py-1.5 bg-gray-800 dark:bg-gray-900 border-b border-gray-700 dark:border-gray-800">
+        <div className="bg-gray-900 dark:bg-black flex flex-col min-h-0">
+          <div className="flex items-center justify-between px-3 py-1.5 bg-gray-800 dark:bg-gray-900 border-b border-gray-700 dark:border-gray-800 flex-shrink-0">
             <div className="flex items-center gap-1.5">
               <Database className="w-3 h-3 text-emerald-400" />
               <span className="text-[10px] font-medium text-emerald-400">Schema / Structure</span>
@@ -123,14 +123,16 @@ function ClipboardPanel({ item }: { item: ClipboardItem }) {
               </button>
             </div>
           </div>
-          <pre className="p-3 text-[10px] text-emerald-300 font-mono overflow-x-auto max-h-80 overflow-y-auto leading-relaxed">
-            {schemaString}
-          </pre>
+          <div className="flex-1 overflow-y-auto min-h-0">
+            <pre className="p-3 text-[11px] text-emerald-300 font-mono leading-relaxed whitespace-pre-wrap">
+              {schemaString}
+            </pre>
+          </div>
         </div>
 
         {/* Column 2: Actual Data */}
-        <div className="bg-gray-900 dark:bg-black">
-          <div className="flex items-center justify-between px-3 py-1.5 bg-gray-800 dark:bg-gray-900 border-b border-gray-700 dark:border-gray-800">
+        <div className="bg-gray-900 dark:bg-black flex flex-col min-h-0">
+          <div className="flex items-center justify-between px-3 py-1.5 bg-gray-800 dark:bg-gray-900 border-b border-gray-700 dark:border-gray-800 flex-shrink-0">
             <div className="flex items-center gap-1.5">
               <FileJson className="w-3 h-3 text-blue-400" />
               <span className="text-[10px] font-medium text-blue-400">Actual Data</span>
@@ -155,9 +157,11 @@ function ClipboardPanel({ item }: { item: ClipboardItem }) {
               </button>
             </div>
           </div>
-          <pre className="p-3 text-[10px] text-blue-300 font-mono overflow-x-auto max-h-80 overflow-y-auto leading-relaxed">
-            {dataString}
-          </pre>
+          <div className="flex-1 overflow-y-auto min-h-0">
+            <pre className="p-3 text-[11px] text-blue-300 font-mono leading-relaxed whitespace-pre-wrap">
+              {dataString}
+            </pre>
+          </div>
         </div>
       </div>
     </div>
