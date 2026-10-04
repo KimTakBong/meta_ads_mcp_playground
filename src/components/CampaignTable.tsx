@@ -1,35 +1,35 @@
 import { campaigns } from '../data/mockData';
-import type { CampaignStatus, DeliveryStatus } from '../data/mockData';
-import { ExternalLink, MoreHorizontal, Pause, Play, AlertCircle, Eye } from 'lucide-react';
+import type { CampaignEntity, CampaignStatus, DeliveryStatus } from '../data/mockData';
+import { ExternalLink, MoreHorizontal, Pause, AlertCircle, Eye } from 'lucide-react';
 
 export default function CampaignTable() {
   const getStatusBadge = (status: CampaignStatus) => {
     switch (status) {
-      case 'Active':
+      case 'ACTIVE':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            Active
+            ACTIVE
           </span>
         );
-      case 'Paused':
+      case 'PAUSED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
-            <Pause className="w-3 h-3" />
-            Paused
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
+            <Pause className="w-2.5 h-2.5" />
+            PAUSED
           </span>
         );
-      case 'Off':
+      case 'DELETED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
-            <AlertCircle className="w-3 h-3" />
-            Off
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 text-gray-600 border border-gray-200">
+            <AlertCircle className="w-2.5 h-2.5" />
+            DELETED
           </span>
         );
-      case 'Draft':
+      case 'ARCHIVED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-600 border border-blue-200">
-            Draft
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 text-gray-600 border border-gray-200">
+            ARCHIVED
           </span>
         );
       default:
@@ -39,133 +39,154 @@ export default function CampaignTable() {
 
   const getDeliveryBadge = (delivery: DeliveryStatus) => {
     switch (delivery) {
-      case 'Active':
-        return <span className="text-xs text-emerald-600 font-medium">Active</span>;
-      case 'Learning':
-        return <span className="text-xs text-blue-600 font-medium">🔄 Learning</span>;
-      case 'Limited':
-        return <span className="text-xs text-amber-600 font-medium">⚠️ Limited</span>;
-      case 'Inactive':
-        return <span className="text-xs text-gray-400 font-medium">Inactive</span>;
+      case 'ACTIVE':
+        return <span className="text-[10px] text-emerald-600 font-medium">Active</span>;
+      case 'LEARNING':
+        return <span className="text-[10px] text-blue-600 font-medium">🔄 Learning</span>;
+      case 'LIMITED':
+        return <span className="text-[10px] text-amber-600 font-medium">⚠️ Limited</span>;
+      case 'INACTIVE':
+        return <span className="text-[10px] text-gray-400 font-medium">Inactive</span>;
       default:
-        return null;
+        return <span className="text-[10px] text-gray-400">{delivery}</span>;
     }
   };
 
   const getObjectiveBadge = (objective: string) => {
     const colors: Record<string, string> = {
-      'Sales': 'bg-purple-50 text-purple-700 border-purple-200',
-      'Leads': 'bg-blue-50 text-blue-700 border-blue-200',
-      'Engagement': 'bg-pink-50 text-pink-700 border-pink-200',
-      'Traffic': 'bg-cyan-50 text-cyan-700 border-cyan-200',
-      'Awareness': 'bg-amber-50 text-amber-700 border-amber-200',
-      'App Promotion': 'bg-green-50 text-green-700 border-green-200',
+      SALES: 'bg-purple-50 text-purple-700 border-purple-200',
+      LEADS: 'bg-blue-50 text-blue-700 border-blue-200',
+      ENGAGEMENT: 'bg-pink-50 text-pink-700 border-pink-200',
+      TRAFFIC: 'bg-cyan-50 text-cyan-700 border-cyan-200',
+      AWARENESS: 'bg-amber-50 text-amber-700 border-amber-200',
+      APP_PROMOTION: 'bg-green-50 text-green-700 border-green-200',
+    };
+    const labels: Record<string, string> = {
+      SALES: 'Sales',
+      LEADS: 'Leads',
+      ENGAGEMENT: 'Engage',
+      TRAFFIC: 'Traffic',
+      AWARENESS: 'Aware',
+      APP_PROMOTION: 'App',
     };
     return (
-      <span className={`inline-flex px-2 py-0.5 rounded-md text-[10px] font-semibold border ${colors[objective] || 'bg-gray-50 text-gray-600 border-gray-200'}`}>
-        {objective}
+      <span className={`inline-flex px-1.5 py-0.5 rounded text-[9px] font-bold border ${colors[objective] || 'bg-gray-50 text-gray-600 border-gray-200'}`}>
+        {labels[objective] || objective}
       </span>
     );
   };
 
   const getQualityBadge = (ranking: string) => {
     switch (ranking) {
-      case 'Above Average':
-        return <span className="text-xs text-emerald-600 font-medium">↑ Above Avg</span>;
-      case 'Average':
-        return <span className="text-xs text-gray-500 font-medium">→ Average</span>;
-      case 'Below Average':
-        return <span className="text-xs text-red-500 font-medium">↓ Below Avg</span>;
+      case 'ABOVE_AVERAGE':
+        return <span className="text-[10px] text-emerald-600 font-medium">↑ Above</span>;
+      case 'AVERAGE':
+        return <span className="text-[10px] text-gray-500 font-medium">→ Avg</span>;
+      case 'BELOW_AVERAGE':
+        return <span className="text-[10px] text-red-500 font-medium">↓ Below</span>;
       default:
-        return <span className="text-xs text-gray-400">N/A</span>;
+        return <span className="text-[10px] text-gray-400">—</span>;
     }
   };
 
-  const formatCurrency = (value: number) => {
-    if (value >= 1000000) return `Rp ${(value / 1000000).toFixed(1)} Jt`;
-    if (value >= 1000) return `Rp ${(value / 1000).toFixed(0)} Rb`;
-    return `Rp ${value}`;
+  const formatCurrency = (value: string) => {
+    const num = parseInt(value);
+    if (num >= 1000000) return `Rp ${(num / 1000000).toFixed(1)} Jt`;
+    if (num >= 1000) return `Rp ${(num / 1000).toFixed(0)} Rb`;
+    return `Rp ${num}`;
   };
 
-  const formatNumber = (value: number) => {
-    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
-    if (value >= 1000) return `${(value / 1000).toFixed(0)}K`;
-    return value.toString();
+  const formatNumber = (value: string) => {
+    const num = parseInt(value);
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(0)}K`;
+    return value;
+  };
+
+  const getResults = (campaign: CampaignEntity) => {
+    const purchaseAction = campaign.actions.find(a => a.action_type === 'purchase' || a.action_type === 'offsite_conversion.fb_pixel_purchase');
+    const leadAction = campaign.actions.find(a => a.action_type === 'lead');
+    const engagementAction = campaign.actions.find(a => a.action_type === 'post_engagement');
+    
+    if (purchaseAction) return parseInt(purchaseAction.value);
+    if (leadAction) return parseInt(leadAction.value);
+    if (engagementAction) return parseInt(engagementAction.value);
+    return parseInt(campaign.inline_link_clicks);
+  };
+
+  const getCostPerResult = (campaign: CampaignEntity) => {
+    const costAction = campaign.cost_per_action_type[0];
+    if (costAction) return parseInt(costAction.value);
+    return parseInt(campaign.spend) / getResults(campaign);
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-      <div className="p-6 border-b border-gray-100">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="p-4 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Campaign Level</h3>
-            <p className="text-sm text-gray-500">Performa semua campaign di level Campaign</p>
+            <h3 className="text-sm font-semibold text-gray-900">Campaign Level</h3>
+            <p className="text-[10px] text-gray-500">ads_get_ad_entities • level: campaign</p>
           </div>
-          <div className="flex items-center gap-2">
-            <button className="flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium text-gray-600 hover:bg-gray-100 transition-colors">
-              <Eye className="w-3.5 h-3.5" />
-              Breakdown
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-medium hover:bg-blue-700 transition-colors">
-              <ExternalLink className="w-3.5 h-3.5" />
-              Buka Ads Manager
-            </button>
-          </div>
+          <button className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-[10px] font-medium hover:bg-blue-700 transition-colors">
+            <ExternalLink className="w-3 h-3" />
+            Ads Manager
+          </button>
         </div>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="bg-gray-50/80">
-              <th className="text-left px-5 py-3.5 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Campaign</th>
-              <th className="text-center px-3 py-3.5 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="text-center px-3 py-3.5 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Delivery</th>
-              <th className="text-right px-3 py-3.5 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Results</th>
-              <th className="text-right px-3 py-3.5 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Cost/Result</th>
-              <th className="text-right px-3 py-3.5 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Impressions</th>
-              <th className="text-right px-3 py-3.5 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Link Clicks</th>
-              <th className="text-right px-3 py-3.5 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">CTR</th>
-              <th className="text-right px-3 py-3.5 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Amount Spent</th>
-              <th className="text-right px-3 py-3.5 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">CPM</th>
-              <th className="text-right px-3 py-3.5 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">ROAS</th>
-              <th className="text-center px-3 py-3.5 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Quality</th>
-              <th className="text-center px-3 py-3.5 text-[10px] font-semibold text-gray-500 uppercase tracking-wider"></th>
+              <th className="text-left px-4 py-2.5 text-[9px] font-semibold text-gray-500 uppercase tracking-wider">Campaign</th>
+              <th className="text-center px-2 py-2.5 text-[9px] font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+              <th className="text-center px-2 py-2.5 text-[9px] font-semibold text-gray-500 uppercase tracking-wider">Delivery</th>
+              <th className="text-right px-2 py-2.5 text-[9px] font-semibold text-gray-500 uppercase tracking-wider">Results</th>
+              <th className="text-right px-2 py-2.5 text-[9px] font-semibold text-gray-500 uppercase tracking-wider">Cost/Result</th>
+              <th className="text-right px-2 py-2.5 text-[9px] font-semibold text-gray-500 uppercase tracking-wider">Impr.</th>
+              <th className="text-right px-2 py-2.5 text-[9px] font-semibold text-gray-500 uppercase tracking-wider">Link Clicks</th>
+              <th className="text-right px-2 py-2.5 text-[9px] font-semibold text-gray-500 uppercase tracking-wider">CTR</th>
+              <th className="text-right px-2 py-2.5 text-[9px] font-semibold text-gray-500 uppercase tracking-wider">Spend</th>
+              <th className="text-right px-2 py-2.5 text-[9px] font-semibold text-gray-500 uppercase tracking-wider">ROAS</th>
+              <th className="text-center px-2 py-2.5 text-[9px] font-semibold text-gray-500 uppercase tracking-wider">Quality</th>
+              <th className="text-center px-2 py-2.5 text-[9px] font-semibold text-gray-500 uppercase tracking-wider"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {campaigns.map((campaign) => (
-              <tr key={campaign.id} className="hover:bg-gray-50/50 transition-colors">
-                <td className="px-5 py-4">
-                  <div className="flex items-start gap-2">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 max-w-[220px] truncate">{campaign.name}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        {getObjectiveBadge(campaign.objective)}
-                        <span className="text-[10px] text-gray-400">
-                          {campaign.adSets} Ad Sets • {campaign.ads} Ads
-                        </span>
-                      </div>
+              <tr key={campaign.campaign_id} className="hover:bg-gray-50/50 transition-colors">
+                <td className="px-4 py-3">
+                  <div>
+                    <p className="text-xs font-medium text-gray-900 max-w-[180px] truncate">{campaign.campaign_name}</p>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      {getObjectiveBadge(campaign.objective)}
+                      <span className="text-[9px] text-gray-400">
+                        {campaign.adsets_count} adsets • {campaign.ads_count} ads
+                      </span>
                     </div>
                   </div>
                 </td>
-                <td className="px-3 py-4 text-center">{getStatusBadge(campaign.status)}</td>
-                <td className="px-3 py-4 text-center">{getDeliveryBadge(campaign.delivery)}</td>
-                <td className="px-3 py-4 text-right text-sm text-gray-700 font-medium">{formatNumber(campaign.results)}</td>
-                <td className="px-3 py-4 text-right text-sm text-gray-700 font-medium">{formatCurrency(campaign.costPerResult)}</td>
-                <td className="px-3 py-4 text-right text-sm text-gray-700 font-medium">{formatNumber(campaign.impressions)}</td>
-                <td className="px-3 py-4 text-right text-sm text-gray-700 font-medium">{formatNumber(campaign.linkClicks)}</td>
-                <td className="px-3 py-4 text-right text-sm text-gray-700 font-medium">{campaign.ctr}%</td>
-                <td className="px-3 py-4 text-right text-sm text-gray-700 font-medium">{formatCurrency(campaign.spend)}</td>
-                <td className="px-3 py-4 text-right text-sm text-gray-700 font-medium">{formatCurrency(campaign.cpm)}</td>
-                <td className="px-3 py-4 text-right">
-                  <span className={`text-sm font-semibold ${campaign.roas >= 4 ? 'text-emerald-600' : campaign.roas >= 3 ? 'text-blue-600' : campaign.roas > 0 ? 'text-amber-600' : 'text-gray-400'}`}>
-                    {campaign.roas > 0 ? `${campaign.roas}x` : '—'}
+                <td className="px-2 py-3 text-center">{getStatusBadge(campaign.status)}</td>
+                <td className="px-2 py-3 text-center">{getDeliveryBadge(campaign.delivery_status)}</td>
+                <td className="px-2 py-3 text-right text-xs text-gray-700 font-medium">{formatNumber(getResults(campaign).toString())}</td>
+                <td className="px-2 py-3 text-right text-xs text-gray-700 font-medium">{formatCurrency(getCostPerResult(campaign).toString())}</td>
+                <td className="px-2 py-3 text-right text-xs text-gray-700 font-medium">{formatNumber(campaign.impressions)}</td>
+                <td className="px-2 py-3 text-right text-xs text-gray-700 font-medium">{formatNumber(campaign.inline_link_clicks)}</td>
+                <td className="px-2 py-3 text-right text-xs text-gray-700 font-medium">{campaign.ctr}%</td>
+                <td className="px-2 py-3 text-right text-xs text-gray-700 font-medium">{formatCurrency(campaign.spend)}</td>
+                <td className="px-2 py-3 text-right">
+                  <span className={`text-xs font-semibold ${
+                    campaign.purchase_roas && campaign.purchase_roas >= 4 ? 'text-emerald-600' :
+                    campaign.purchase_roas && campaign.purchase_roas >= 3 ? 'text-blue-600' :
+                    campaign.purchase_roas && campaign.purchase_roas > 0 ? 'text-amber-600' : 'text-gray-400'
+                  }`}>
+                    {campaign.purchase_roas ? `${campaign.purchase_roas}x` : '—'}
                   </span>
                 </td>
-                <td className="px-3 py-4 text-center">{getQualityBadge(campaign.qualityRanking)}</td>
-                <td className="px-3 py-4 text-center">
-                  <button className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-                    <MoreHorizontal className="w-4 h-4 text-gray-400" />
+                <td className="px-2 py-3 text-center">{getQualityBadge(campaign.quality_ranking)}</td>
+                <td className="px-2 py-3 text-center">
+                  <button className="p-1 rounded hover:bg-gray-100 transition-colors">
+                    <MoreHorizontal className="w-3.5 h-3.5 text-gray-400" />
                   </button>
                 </td>
               </tr>
@@ -173,9 +194,9 @@ export default function CampaignTable() {
           </tbody>
         </table>
       </div>
-      <div className="px-6 py-3 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
-        <p className="text-xs text-gray-500">Menampilkan {campaigns.length} campaigns</p>
-        <p className="text-xs text-gray-400">Data level: Campaign | Klik untuk drill down ke Ad Set / Ad level</p>
+      <div className="px-4 py-2 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
+        <p className="text-[9px] text-gray-500">{campaigns.length} campaigns</p>
+        <p className="text-[9px] text-gray-400">level: campaign | drill down: adset → ad</p>
       </div>
     </div>
   );

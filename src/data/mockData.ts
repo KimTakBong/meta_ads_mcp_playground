@@ -1,311 +1,491 @@
-// Data disesuaikan dengan struktur real Meta Ads Manager (ODAX 2026)
-// Reference: https://www.facebook.com/business/help/1438417719786914
+/**
+ * Data structure disesuaikan dengan output Meta Ads MCP Server
+ * Reference: https://developers.facebook.com/documentation/ads-commerce/ads-ai-connectors/ads-mcp-server/
+ *
+ * Tools yang digunakan:
+ * - ads_get_ad_entities (campaigns, ad sets, ads with performance metrics)
+ * - ads_insights_performance_trend (CPC, CPM, cost per result, ROAS, CTR, conversion rate)
+ * - ads_get_opportunity_score (optimization score 0-100)
+ * - ads_insights_anomaly_signal (unusual patterns)
+ * - ads_insights_auction_ranking_benchmarks (quality ranking)
+ * - ads_insights_industry_benchmark (comparison vs similar advertisers)
+ */
 
-export const overviewMetrics = {
-  totalSpend: 24580000,
-  totalImpressions: 1845000,
-  totalReach: 1230000,
-  totalLinkClicks: 45200, // Link clicks (bukan all clicks)
-  totalAllClicks: 52800, // Semua jenis klik
-  totalConversions: 1850,
-  totalResults: 1850, // "Results" adalah istilah Meta untuk konversi berdasarkan objective
-  avgCTR: 2.45, // Link CTR (bukan all CTR)
-  avgAllCTR: 2.86,
-  avgCPC: 543, // Cost per link click
-  avgCPM: 13322, // Cost per 1000 impressions
-  avgCPP: 19984, // Cost per 1000 people reached
-  avgCostPerResult: 13286, // Cost per conversion/result
-  avgConversionRate: 4.09, // Conversion rate (conversions / link clicks)
-  roas: 3.8,
-  frequency: 1.5, // impressions / reach
-  engagementRate: 4.12,
+// ============================================
+// ads_get_opportunity_score response
+// ============================================
+export interface OpportunityScore {
+  score: number; // 0-100
+  recommendations: {
+    id: string;
+    title: string;
+    description: string;
+    impact: 'HIGH' | 'MEDIUM' | 'LOW';
+    type: string;
+  }[];
+}
+
+export const opportunityScore: OpportunityScore = {
+  score: 72,
+  recommendations: [
+    {
+      id: 'rec_001',
+      title: 'Increase budget on high-ROAS campaign',
+      description: '"Sales - SmartWatch Pro Q1" has ROAS 4.2x but is budget-constrained. Increase daily budget by 30%.',
+      impact: 'HIGH',
+      type: 'BUDGET_REALLOCATION',
+    },
+    {
+      id: 'rec_002',
+      title: 'Refresh creative for fatigued ad',
+      description: 'Ad "Flash Sale Carousel v2" has frequency 3.8 and CTR declined 32%. Replace creative.',
+      impact: 'MEDIUM',
+      type: 'CREATIVE_REFRESH',
+    },
+    {
+      id: 'rec_003',
+      title: 'Expand audience for Learning ad set',
+      description: '"Retargeting - Cart Abandonment" has limited delivery. Consider broadening audience.',
+      impact: 'MEDIUM',
+      type: 'AUDIENCE_EXPANSION',
+    },
+  ],
 };
 
-// 6 ODAX Objectives (simplified dari 11 objectives lama)
-export type CampaignObjective =
-  | 'Awareness'
-  | 'Traffic'
-  | 'Engagement'
-  | 'Leads'
-  | 'App Promotion'
-  | 'Sales';
+// ============================================
+// ads_insights_anomaly_signal response
+// ============================================
+export interface AnomalySignal {
+  metric: string;
+  severity: 'CRITICAL' | 'WARNING' | 'INFO';
+  message: string;
+  currentValue: number;
+  expectedValue: number;
+  deviation: string;
+}
 
-// Status di Meta Ads Manager (tidak ada "completed")
-export type CampaignStatus = 'Active' | 'Paused' | 'Off' | 'Draft';
+export const anomalySignals: AnomalySignal[] = [
+  {
+    metric: 'CPM',
+    severity: 'WARNING',
+    message: 'CPM meningkat 28% pada campaign "Traffic - Blog Content" dalam 3 hari terakhir',
+    currentValue: 20766,
+    expectedValue: 16200,
+    deviation: '+28%',
+  },
+  {
+    metric: 'CTR',
+    severity: 'INFO',
+    message: 'CTR "Engagement - Brand Content Series" naik 22% vs 7-day average',
+    currentValue: 2.74,
+    expectedValue: 2.24,
+    deviation: '+22%',
+  },
+];
+
+// ============================================
+// ads_get_ad_entities response (campaign level)
+// ============================================
+// ODAX objectives (Meta Marketing API enum values)
+export type CampaignObjective =
+  | 'AWARENESS'
+  | 'TRAFFIC'
+  | 'ENGAGEMENT'
+  | 'LEADS'
+  | 'APP_PROMOTION'
+  | 'SALES';
+
+// Status enum dari Meta Marketing API
+export type CampaignStatus = 'ACTIVE' | 'PAUSED' | 'DELETED' | 'ARCHIVED';
 
 // Delivery status
-export type DeliveryStatus = 'Active' | 'Learning' | 'Limited' | 'Inactive';
+export type DeliveryStatus = 'ACTIVE' | 'LEARNING' | 'LIMITED' | 'INACTIVE' | 'PREAPPROVED' | 'PENDING';
 
-export const dailyPerformance = [
-  { date: '07 Jan', impressions: 58000, linkClicks: 1420, allClicks: 1650, spend: 780000, conversions: 58, reach: 42000 },
-  { date: '08 Jan', impressions: 62000, linkClicks: 1580, allClicks: 1820, spend: 820000, conversions: 65, reach: 45000 },
-  { date: '09 Jan', impressions: 55000, linkClicks: 1350, allClicks: 1560, spend: 720000, conversions: 52, reach: 39000 },
-  { date: '10 Jan', impressions: 71000, linkClicks: 1820, allClicks: 2100, spend: 950000, conversions: 78, reach: 52000 },
-  { date: '11 Jan', impressions: 68000, linkClicks: 1680, allClicks: 1940, spend: 890000, conversions: 72, reach: 49000 },
-  { date: '12 Jan', impressions: 75000, linkClicks: 1950, allClicks: 2250, spend: 1020000, conversions: 85, reach: 55000 },
-  { date: '13 Jan', impressions: 82000, linkClicks: 2100, allClicks: 2430, spend: 1100000, conversions: 92, reach: 60000 },
-  { date: '14 Jan', impressions: 78000, linkClicks: 1980, allClicks: 2290, spend: 1050000, conversions: 88, reach: 57000 },
-  { date: '15 Jan', impressions: 85000, linkClicks: 2200, allClicks: 2550, spend: 1150000, conversions: 95, reach: 63000 },
-  { date: '16 Jan', impressions: 90000, linkClicks: 2350, allClicks: 2720, spend: 1200000, conversions: 102, reach: 67000 },
-  { date: '17 Jan', impressions: 88000, linkClicks: 2280, allClicks: 2640, spend: 1180000, conversions: 98, reach: 65000 },
-  { date: '18 Jan', impressions: 92000, linkClicks: 2400, allClicks: 2780, spend: 1250000, conversions: 108, reach: 69000 },
-  { date: '19 Jan', impressions: 95000, linkClicks: 2520, allClicks: 2920, spend: 1300000, conversions: 115, reach: 72000 },
-  { date: '20 Jan', impressions: 98000, linkClicks: 2600, allClicks: 3010, spend: 1350000, conversions: 120, reach: 75000 },
+// Action types dari AdsActionStats
+export interface AdsActionStat {
+  action_type: string;
+  value: string;
+}
+
+// Auction ranking (dari ads_insights_auction_ranking_benchmarks)
+export type QualityRanking = 'ABOVE_AVERAGE' | 'AVERAGE' | 'BELOW_AVERAGE';
+
+// Campaign entity (format sesuai ads_get_ad_entities)
+export interface CampaignEntity {
+  campaign_id: string;
+  campaign_name: string;
+  objective: CampaignObjective;
+  status: CampaignStatus;
+  delivery_status: DeliveryStatus;
+  start_time: string;
+  end_time: string | null;
+  daily_budget: string | null;
+  lifetime_budget: string | null;
+  bid_strategy: string;
+  // Ad structure
+  adsets_count: number;
+  ads_count: number;
+  // Performance metrics (semua string sesuai API response)
+  impressions: string;
+  reach: string;
+  frequency: string;
+  clicks: string; // all clicks
+  inline_link_clicks: string; // link clicks
+  ctr: string; // link CTR = inline_link_clicks / impressions
+  cpc: string; // cost per inline link click
+  cpm: string;
+  spend: string;
+  // Actions (array of {action_type, value})
+  actions: AdsActionStat[];
+  action_values: AdsActionStat[];
+  cost_per_action_type: AdsActionStat[];
+  // ROAS
+  purchase_roas: number | null;
+  // Quality rankings
+  quality_ranking: QualityRanking;
+  engagement_rate_ranking: QualityRanking;
+  conversion_rate_ranking: QualityRanking;
+}
+
+export const campaigns: CampaignEntity[] = [
+  {
+    campaign_id: '23851234567890123',
+    campaign_name: 'Sales - SmartWatch Pro Q1',
+    objective: 'SALES',
+    status: 'ACTIVE',
+    delivery_status: 'ACTIVE',
+    start_time: '2026-01-01T00:00:00+0700',
+    end_time: '2026-03-31T23:59:59+0700',
+    daily_budget: '500000',
+    lifetime_budget: null,
+    bid_strategy: 'LOWEST_COST_WITHOUT_CAP',
+    adsets_count: 3,
+    ads_count: 9,
+    impressions: '425000',
+    reach: '312000',
+    frequency: '1.36',
+    clicks: '14200',
+    inline_link_clicks: '12500',
+    ctr: '2.94',
+    cpc: '416',
+    cpm: '12235',
+    spend: '5200000',
+    actions: [
+      { action_type: 'offsite_conversion.fb_pixel_purchase', value: '420' },
+      { action_type: 'purchase', value: '420' },
+    ],
+    action_values: [
+      { action_type: 'offsite_conversion.fb_pixel_purchase', value: '21840000' },
+      { action_type: 'purchase', value: '21840000' },
+    ],
+    cost_per_action_type: [
+      { action_type: 'offsite_conversion.fb_pixel_purchase', value: '12381' },
+      { action_type: 'purchase', value: '12381' },
+    ],
+    purchase_roas: 4.2,
+    quality_ranking: 'ABOVE_AVERAGE',
+    engagement_rate_ranking: 'ABOVE_AVERAGE',
+    conversion_rate_ranking: 'AVERAGE',
+  },
+  {
+    campaign_id: '23851234567890124',
+    campaign_name: 'Leads - Webinar Digital Marketing',
+    objective: 'LEADS',
+    status: 'ACTIVE',
+    delivery_status: 'ACTIVE',
+    start_time: '2026-01-05T00:00:00+0700',
+    end_time: '2026-02-28T23:59:59+0700',
+    daily_budget: '400000',
+    lifetime_budget: null,
+    bid_strategy: 'COST_CAP',
+    adsets_count: 2,
+    ads_count: 6,
+    impressions: '380000',
+    reach: '285000',
+    frequency: '1.33',
+    clicks: '12800',
+    inline_link_clicks: '11200',
+    ctr: '2.95',
+    cpc: '607',
+    cpm: '17895',
+    spend: '6800000',
+    actions: [
+      { action_type: 'lead', value: '520' },
+      { action_type: 'onsite_conversion.lead_grouped', value: '380' },
+      { action_type: 'offsite_conversion.fb_pixel_lead', value: '140' },
+    ],
+    action_values: [
+      { action_type: 'lead', value: '32640000' },
+    ],
+    cost_per_action_type: [
+      { action_type: 'lead', value: '13077' },
+    ],
+    purchase_roas: 4.8,
+    quality_ranking: 'ABOVE_AVERAGE',
+    engagement_rate_ranking: 'ABOVE_AVERAGE',
+    conversion_rate_ranking: 'ABOVE_AVERAGE',
+  },
+  {
+    campaign_id: '23851234567890125',
+    campaign_name: 'Retargeting - Cart Abandonment',
+    objective: 'SALES',
+    status: 'ACTIVE',
+    delivery_status: 'ACTIVE',
+    start_time: '2026-01-01T00:00:00+0700',
+    end_time: '2026-03-31T23:59:59+0700',
+    daily_budget: '350000',
+    lifetime_budget: null,
+    bid_strategy: 'LOWEST_COST_WITHOUT_CAP',
+    adsets_count: 4,
+    ads_count: 12,
+    impressions: '520000',
+    reach: '180000',
+    frequency: '2.89',
+    clicks: '10200',
+    inline_link_clicks: '8900',
+    ctr: '1.71',
+    cpc: '506',
+    cpm: '8654',
+    spend: '4500000',
+    actions: [
+      { action_type: 'offsite_conversion.fb_pixel_purchase', value: '380' },
+      { action_type: 'purchase', value: '380' },
+    ],
+    action_values: [
+      { action_type: 'purchase', value: '23400000' },
+    ],
+    cost_per_action_type: [
+      { action_type: 'purchase', value: '11842' },
+    ],
+    purchase_roas: 5.2,
+    quality_ranking: 'AVERAGE',
+    engagement_rate_ranking: 'AVERAGE',
+    conversion_rate_ranking: 'ABOVE_AVERAGE',
+  },
+  {
+    campaign_id: '23851234567890126',
+    campaign_name: 'Engagement - Brand Content Series',
+    objective: 'ENGAGEMENT',
+    status: 'ACTIVE',
+    delivery_status: 'LEARNING',
+    start_time: '2026-01-15T00:00:00+0700',
+    end_time: '2026-02-15T23:59:59+0700',
+    daily_budget: '200000',
+    lifetime_budget: null,
+    bid_strategy: 'LOWEST_COST_WITHOUT_CAP',
+    adsets_count: 2,
+    ads_count: 4,
+    impressions: '285000',
+    reach: '220000',
+    frequency: '1.30',
+    clicks: '15600',
+    inline_link_clicks: '7800',
+    ctr: '2.74',
+    cpc: '410',
+    cpm: '11228',
+    spend: '3200000',
+    actions: [
+      { action_type: 'post_engagement', value: '1850' },
+      { action_type: 'page_engagement', value: '1620' },
+      { action_type: 'link_click', value: '7800' },
+    ],
+    action_values: [],
+    cost_per_action_type: [
+      { action_type: 'post_engagement', value: '1730' },
+    ],
+    purchase_roas: null,
+    quality_ranking: 'ABOVE_AVERAGE',
+    engagement_rate_ranking: 'ABOVE_AVERAGE',
+    conversion_rate_ranking: 'ABOVE_AVERAGE',
+  },
+  {
+    campaign_id: '23851234567890127',
+    campaign_name: 'Traffic - Blog Content Promotion',
+    objective: 'TRAFFIC',
+    status: 'PAUSED',
+    delivery_status: 'INACTIVE',
+    start_time: '2026-01-01T00:00:00+0700',
+    end_time: '2026-01-31T23:59:59+0700',
+    daily_budget: '300000',
+    lifetime_budget: null,
+    bid_strategy: 'LOWEST_COST_WITHOUT_CAP',
+    adsets_count: 3,
+    ads_count: 6,
+    impressions: '235000',
+    reach: '195000',
+    frequency: '1.20',
+    clicks: '5400',
+    inline_link_clicks: '4800',
+    ctr: '2.04',
+    cpc: '1017',
+    cpm: '20766',
+    spend: '4880000',
+    actions: [
+      { action_type: 'link_click', value: '4800' },
+      { action_type: 'offsite_conversion.fb_pixel_purchase', value: '220' },
+    ],
+    action_values: [
+      { action_type: 'purchase', value: '10248000' },
+    ],
+    cost_per_action_type: [
+      { action_type: 'link_click', value: '1017' },
+    ],
+    purchase_roas: 2.1,
+    quality_ranking: 'BELOW_AVERAGE',
+    engagement_rate_ranking: 'AVERAGE',
+    conversion_rate_ranking: 'BELOW_AVERAGE',
+  },
+  {
+    campaign_id: '23851234567890128',
+    campaign_name: 'Awareness - New Product Teaser',
+    objective: 'AWARENESS',
+    status: 'ACTIVE',
+    delivery_status: 'ACTIVE',
+    start_time: '2026-01-10T00:00:00+0700',
+    end_time: '2026-02-10T23:59:59+0700',
+    daily_budget: null,
+    lifetime_budget: '5000000',
+    bid_strategy: 'HIGHEST_CPM',
+    adsets_count: 1,
+    ads_count: 3,
+    impressions: '450000',
+    reach: '380000',
+    frequency: '1.18',
+    clicks: '3200',
+    inline_link_clicks: '2100',
+    ctr: '0.47',
+    cpc: '1333',
+    cpm: '6222',
+    spend: '2800000',
+    actions: [],
+    action_values: [],
+    cost_per_action_type: [],
+    purchase_roas: null,
+    quality_ranking: 'AVERAGE',
+    engagement_rate_ranking: 'BELOW_AVERAGE',
+    conversion_rate_ranking: 'AVERAGE',
+  },
 ];
 
-// Campaign data sesuai struktur Meta Ads Manager
-export const campaigns = [
-  {
-    id: 'camp_001',
-    name: 'Sales - SmartWatch Pro Q1',
-    status: 'Active' as CampaignStatus,
-    delivery: 'Active' as DeliveryStatus,
-    objective: 'Sales' as CampaignObjective,
-    campaignType: 'Sales',
-    adSets: 3,
-    ads: 9,
-    schedule: '01 Jan - 31 Mar 2026',
-    bidding: 'Lowest Cost (Highest Volume)',
-    impressions: 425000,
-    reach: 312000,
-    linkClicks: 12500,
-    allClicks: 14200,
-    ctr: 2.94, // Link CTR
-    allCtr: 3.34,
-    spend: 5200000,
-    conversions: 420,
-    results: 420,
-    costPerResult: 12381,
-    conversionRate: 3.36,
-    cpc: 416,
-    cpm: 12235,
-    cpp: 16667,
-    roas: 4.2,
-    frequency: 1.36,
-    engagementRate: 4.8,
-    qualityRanking: 'Above Average',
-    engagementRanking: 'Above Average',
-    conversionRanking: 'Average',
-    change: 12.5,
-  },
-  {
-    id: 'camp_002',
-    name: 'Leads - Webinar Digital Marketing',
-    status: 'Active' as CampaignStatus,
-    delivery: 'Active' as DeliveryStatus,
-    objective: 'Leads' as CampaignObjective,
-    campaignType: 'Leads',
-    adSets: 2,
-    ads: 6,
-    schedule: '05 Jan - 28 Feb 2026',
-    bidding: 'Cost Cap',
-    impressions: 380000,
-    reach: 285000,
-    linkClicks: 11200,
-    allClicks: 12800,
-    ctr: 2.95,
-    allCtr: 3.37,
-    spend: 6800000,
-    conversions: 520,
-    results: 520,
-    costPerResult: 13077,
-    conversionRate: 4.64,
-    cpc: 607,
-    cpm: 17895,
-    cpp: 23860,
-    roas: 4.8,
-    frequency: 1.33,
-    engagementRate: 5.2,
-    qualityRanking: 'Above Average',
-    engagementRanking: 'Above Average',
-    conversionRanking: 'Above Average',
-    change: 8.3,
-  },
-  {
-    id: 'camp_003',
-    name: 'Retargeting - Cart Abandonment (Sales)',
-    status: 'Active' as CampaignStatus,
-    delivery: 'Active' as DeliveryStatus,
-    objective: 'Sales' as CampaignObjective,
-    campaignType: 'Sales',
-    adSets: 4,
-    ads: 12,
-    schedule: '01 Jan - 31 Mar 2026',
-    bidding: 'Lowest Cost (Highest Volume)',
-    impressions: 520000,
-    reach: 180000,
-    linkClicks: 8900,
-    allClicks: 10200,
-    ctr: 1.71,
-    allCtr: 1.96,
-    spend: 4500000,
-    conversions: 380,
-    results: 380,
-    costPerResult: 11842,
-    conversionRate: 4.27,
-    cpc: 506,
-    cpm: 8654,
-    cpp: 25000,
-    roas: 5.2,
-    frequency: 2.89,
-    engagementRate: 3.1,
-    qualityRanking: 'Average',
-    engagementRanking: 'Average',
-    conversionRanking: 'Above Average',
-    change: -3.2,
-  },
-  {
-    id: 'camp_004',
-    name: 'Engagement - Brand Content Series',
-    status: 'Active' as CampaignStatus,
-    delivery: 'Learning' as DeliveryStatus,
-    objective: 'Engagement' as CampaignObjective,
-    campaignType: 'Engagement',
-    adSets: 2,
-    ads: 4,
-    schedule: '15 Jan - 15 Feb 2026',
-    bidding: 'Lowest Cost (Highest Volume)',
-    impressions: 285000,
-    reach: 220000,
-    linkClicks: 7800,
-    allClicks: 15600, // Engagement campaign = banyak all clicks (likes, comments, shares)
-    ctr: 2.74,
-    allCtr: 5.47,
-    spend: 3200000,
-    conversions: 310,
-    results: 1850, // Results = engagements (bukan conversions)
-    costPerResult: 1730,
-    conversionRate: 3.97,
-    cpc: 410,
-    cpm: 11228,
-    cpp: 14545,
-    roas: 3.5,
-    frequency: 1.3,
-    engagementRate: 8.4,
-    qualityRanking: 'Above Average',
-    engagementRanking: 'Above Average',
-    conversionRanking: 'Above Average',
-    change: 22.1,
-  },
-  {
-    id: 'camp_005',
-    name: 'Traffic - Blog Content Promotion',
-    status: 'Paused' as CampaignStatus,
-    delivery: 'Inactive' as DeliveryStatus,
-    objective: 'Traffic' as CampaignObjective,
-    campaignType: 'Traffic',
-    adSets: 3,
-    ads: 6,
-    schedule: '01 Jan - 31 Jan 2026',
-    bidding: 'Lowest Cost (Highest Volume)',
-    impressions: 235000,
-    reach: 195000,
-    linkClicks: 4800,
-    allClicks: 5400,
-    ctr: 2.04,
-    allCtr: 2.3,
-    spend: 4880000,
-    conversions: 220,
-    results: 220,
-    costPerResult: 22182,
-    conversionRate: 4.58,
-    cpc: 1017,
-    cpm: 20766,
-    cpp: 25026,
-    roas: 2.1,
-    frequency: 1.2,
-    engagementRate: 2.8,
-    qualityRanking: 'Below Average',
-    engagementRanking: 'Average',
-    conversionRanking: 'Below Average',
-    change: -15.4,
-  },
-  {
-    id: 'camp_006',
-    name: 'Awareness - New Product Teaser',
-    status: 'Active' as CampaignStatus,
-    delivery: 'Active' as DeliveryStatus,
-    objective: 'Awareness' as CampaignObjective,
-    campaignType: 'Awareness',
-    adSets: 1,
-    ads: 3,
-    schedule: '10 Jan - 10 Feb 2026',
-    bidding: 'Highest CPM (Ad Recall)',
-    impressions: 450000,
-    reach: 380000,
-    linkClicks: 2100, // Awareness campaign = sedikit link clicks
-    allClicks: 3200,
-    ctr: 0.47,
-    allCtr: 0.71,
-    spend: 2800000,
-    conversions: 0, // Awareness tidak optimasi untuk konversi
-    results: 380000, // Results = reach untuk awareness
-    costPerResult: 7.37,
-    conversionRate: 0,
-    cpc: 1333,
-    cpm: 6222,
-    cpp: 7368,
-    roas: 0,
-    frequency: 1.18,
-    engagementRate: 1.2,
-    qualityRanking: 'Average',
-    engagementRanking: 'Below Average',
-    conversionRanking: 'N/A',
-    change: 5.6,
-  },
+// ============================================
+// ads_insights_performance_trend response
+// ============================================
+export interface PerformanceTrend {
+  date_start: string;
+  date_stop: string;
+  impressions: string;
+  inline_link_clicks: string;
+  spend: string;
+  conversions: string;
+  reach: string;
+  // Computed
+  ctr: string;
+  cpc: string;
+  cpm: string;
+  cost_per_result: string;
+  roas: string;
+  conversion_rate: string;
+}
+
+export const dailyPerformance: PerformanceTrend[] = [
+  { date_start: '2026-01-07', date_stop: '2026-01-07', impressions: '58000', inline_link_clicks: '1420', spend: '780000', conversions: '58', reach: '42000', ctr: '2.45', cpc: '549', cpm: '13448', cost_per_result: '13448', roas: '3.1', conversion_rate: '4.08' },
+  { date_start: '2026-01-08', date_stop: '2026-01-08', impressions: '62000', inline_link_clicks: '1580', spend: '820000', conversions: '65', reach: '45000', ctr: '2.55', cpc: '519', cpm: '13226', cost_per_result: '12615', roas: '3.3', conversion_rate: '4.11' },
+  { date_start: '2026-01-09', date_stop: '2026-01-09', impressions: '55000', inline_link_clicks: '1350', spend: '720000', conversions: '52', reach: '39000', ctr: '2.45', cpc: '533', cpm: '13091', cost_per_result: '13846', roas: '2.9', conversion_rate: '3.85' },
+  { date_start: '2026-01-10', date_stop: '2026-01-10', impressions: '71000', inline_link_clicks: '1820', spend: '950000', conversions: '78', reach: '52000', ctr: '2.56', cpc: '522', cpm: '13380', cost_per_result: '12179', roas: '3.5', conversion_rate: '4.29' },
+  { date_start: '2026-01-11', date_stop: '2026-01-11', impressions: '68000', inline_link_clicks: '1680', spend: '890000', conversions: '72', reach: '49000', ctr: '2.47', cpc: '530', cpm: '13088', cost_per_result: '12361', roas: '3.4', conversion_rate: '4.29' },
+  { date_start: '2026-01-12', date_stop: '2026-01-12', impressions: '75000', inline_link_clicks: '1950', spend: '1020000', conversions: '85', reach: '55000', ctr: '2.60', cpc: '523', cpm: '13600', cost_per_result: '12000', roas: '3.7', conversion_rate: '4.36' },
+  { date_start: '2026-01-13', date_stop: '2026-01-13', impressions: '82000', inline_link_clicks: '2100', spend: '1100000', conversions: '92', reach: '60000', ctr: '2.56', cpc: '524', cpm: '13415', cost_per_result: '11957', roas: '3.8', conversion_rate: '4.38' },
+  { date_start: '2026-01-14', date_stop: '2026-01-14', impressions: '78000', inline_link_clicks: '1980', spend: '1050000', conversions: '88', reach: '57000', ctr: '2.54', cpc: '530', cpm: '13462', cost_per_result: '11932', roas: '3.6', conversion_rate: '4.44' },
+  { date_start: '2026-01-15', date_stop: '2026-01-15', impressions: '85000', inline_link_clicks: '2200', spend: '1150000', conversions: '95', reach: '63000', ctr: '2.59', cpc: '523', cpm: '13529', cost_per_result: '12105', roas: '3.9', conversion_rate: '4.32' },
+  { date_start: '2026-01-16', date_stop: '2026-01-16', impressions: '90000', inline_link_clicks: '2350', spend: '1200000', conversions: '102', reach: '67000', ctr: '2.61', cpc: '511', cpm: '13333', cost_per_result: '11765', roas: '4.0', conversion_rate: '4.34' },
+  { date_start: '2026-01-17', date_stop: '2026-01-17', impressions: '88000', inline_link_clicks: '2280', spend: '1180000', conversions: '98', reach: '65000', ctr: '2.59', cpc: '518', cpm: '13409', cost_per_result: '12041', roas: '3.9', conversion_rate: '4.30' },
+  { date_start: '2026-01-18', date_stop: '2026-01-18', impressions: '92000', inline_link_clicks: '2400', spend: '1250000', conversions: '108', reach: '69000', ctr: '2.61', cpc: '521', cpm: '13587', cost_per_result: '11574', roas: '4.1', conversion_rate: '4.50' },
+  { date_start: '2026-01-19', date_stop: '2026-01-19', impressions: '95000', inline_link_clicks: '2520', spend: '1300000', conversions: '115', reach: '72000', ctr: '2.65', cpc: '516', cpm: '13684', cost_per_result: '11304', roas: '4.2', conversion_rate: '4.56' },
+  { date_start: '2026-01-20', date_stop: '2026-01-20', impressions: '98000', inline_link_clicks: '2600', spend: '1350000', conversions: '120', reach: '75000', ctr: '2.65', cpc: '519', cpm: '13776', cost_per_result: '11250', roas: '4.3', conversion_rate: '4.62' },
 ];
 
-// Demografi audience berdasarkan data Meta Ads
-export const audienceDemographics = [
-  { name: '13-17', value: 2 },
-  { name: '18-24', value: 22 },
-  { name: '25-34', value: 38 },
-  { name: '35-44', value: 22 },
-  { name: '45-54', value: 10 },
-  { name: '55-64', value: 4 },
-  { name: '65+', value: 2 },
+// ============================================
+// ads_insights_industry_benchmark response
+// ============================================
+export interface IndustryBenchmark {
+  metric: string;
+  yourValue: number;
+  industryAverage: number;
+  industryTop: number;
+  percentile: number;
+}
+
+export const industryBenchmarks: IndustryBenchmark[] = [
+  { metric: 'CTR', yourValue: 2.45, industryAverage: 1.80, industryTop: 3.50, percentile: 72 },
+  { metric: 'CPC', yourValue: 543, industryAverage: 680, industryTop: 420, percentile: 68 },
+  { metric: 'CPM', yourValue: 13322, industryAverage: 15500, industryTop: 11000, percentile: 65 },
+  { metric: 'ROAS', yourValue: 3.8, industryAverage: 2.9, industryTop: 5.2, percentile: 74 },
+  { metric: 'Conversion Rate', yourValue: 4.09, industryAverage: 3.2, industryTop: 5.8, percentile: 70 },
 ];
 
-// Gender split (tersedia di Meta Ads)
-export const genderSplit = [
-  { name: 'Male', value: 54 },
-  { name: 'Female', value: 44 },
-  { name: 'Other', value: 2 },
+// ============================================
+// Aggregated metrics (computed from campaigns)
+// ============================================
+export const overviewMetrics = {
+  // Core delivery
+  impressions: 1845000,
+  reach: 1230000,
+  frequency: 1.5,
+  // Click metrics
+  clicks: 52800, // all clicks
+  inline_link_clicks: 45200, // link clicks
+  ctr: 2.45, // link CTR
+  // Cost metrics
+  spend: 24580000,
+  cpc: 543, // cost per inline link click
+  cpm: 13322,
+  cpp: 19984, // cost per 1000 people reached
+  // Conversions
+  conversions: 1850,
+  cost_per_result: 13286,
+  conversion_rate: 4.09,
+  // ROAS
+  purchase_roas: 3.8,
+  // Engagement
+  engagement_rate: 4.12,
+};
+
+// ============================================
+// Breakdowns (dari ads_get_ad_entities dengan breakdowns param)
+// ============================================
+
+// age, gender breakdown
+export const audienceByAge = [
+  { age: '13-17', impressions: '36900', reach: '24600', spend: '491600', inline_link_clicks: '904' },
+  { age: '18-24', impressions: '405900', reach: '270600', spend: '5399780', inline_link_clicks: '9944' },
+  { age: '25-34', impressions: '701100', reach: '467400', spend: '9324630', inline_link_clicks: '17177' },
+  { age: '35-44', impressions: '405900', reach: '270600', spend: '5399780', inline_link_clicks: '9944' },
+  { age: '45-54', impressions: '184500', reach: '123000', spend: '2458000', inline_link_clicks: '4516' },
+  { age: '55-64', impressions: '73800', reach: '49200', spend: '983200', inline_link_clicks: '1808' },
+  { age: '65+', impressions: '36900', reach: '24600', spend: '491600', inline_link_clicks: '904' },
 ];
 
-// Placements breakdown (sesuai Meta Ads Manager)
+export const audienceByGender = [
+  { gender: 'male', impressions: '996300', reach: '664200', spend: '13273200', inline_link_clicks: '24408' },
+  { gender: 'female', impressions: '813900', reach: '542600', spend: '10852200', inline_link_clicks: '19946' },
+  { gender: 'unknown', impressions: '36900', reach: '24600', spend: '491600', inline_link_clicks: '904' },
+];
+
+// publisher_platform, platform_position breakdown
 export const placementsBreakdown = [
-  { name: 'Facebook Feed', impressions: 520000, clicks: 14200, spend: 8200000, percentage: 33.4 },
-  { name: 'Instagram Feed', impressions: 380000, clicks: 11500, spend: 6500000, percentage: 26.5 },
-  { name: 'Instagram Reels', impressions: 285000, clicks: 8200, spend: 4200000, percentage: 17.1 },
-  { name: 'Facebook & IG Stories', impressions: 220000, clicks: 5800, spend: 2800000, percentage: 11.4 },
-  { name: 'Facebook Reels', impressions: 180000, clicks: 4500, spend: 2100000, percentage: 8.5 },
-  { name: 'Audience Network', impressions: 140000, clicks: 2800, spend: 1280000, percentage: 5.2 },
-  { name: 'Messenger', impressions: 120000, clicks: 1900, spend: 900000, percentage: 3.7 },
+  { publisher_platform: 'facebook', platform_position: 'feed', impressions: '520000', inline_link_clicks: '14200', spend: '8200000' },
+  { publisher_platform: 'instagram', platform_position: 'feed', impressions: '380000', inline_link_clicks: '11500', spend: '6500000' },
+  { publisher_platform: 'instagram', platform_position: 'reels', impressions: '285000', inline_link_clicks: '8200', spend: '4200000' },
+  { publisher_platform: 'facebook', platform_position: 'story', impressions: '132000', inline_link_clicks: '3400', spend: '1680000' },
+  { publisher_platform: 'instagram', platform_position: 'story', impressions: '88000', inline_link_clicks: '2400', spend: '1120000' },
+  { publisher_platform: 'facebook', platform_position: 'reels', impressions: '180000', inline_link_clicks: '4500', spend: '2100000' },
+  { publisher_platform: 'audience_network', platform_position: 'classic', impressions: '140000', inline_link_clicks: '2800', spend: '1280000' },
+  { publisher_platform: 'messenger', platform_position: 'messenger_home', impressions: '120000', inline_link_clicks: '1900', spend: '900000' },
 ];
 
-// Platform split (simplified)
-export const platformSplit = [
-  { name: 'Facebook', impressions: 1060000, clicks: 28400, spend: 15280000, percentage: 62.2 },
-  { name: 'Instagram', impressions: 665000, clicks: 19700, spend: 10700000, percentage: 43.5 },
-  { name: 'Audience Network', impressions: 140000, clicks: 2800, spend: 1280000, percentage: 5.2 },
-  { name: 'Messenger', impressions: 120000, clicks: 1900, spend: 900000, percentage: 3.7 },
-];
-
-// Weekly trend
-export const weeklyTrend = [
-  { week: 'Minggu 1', ctr: 2.1, cpc: 580, roas: 3.2, costPerResult: 14200 },
-  { week: 'Minggu 2', ctr: 2.3, cpc: 550, roas: 3.5, costPerResult: 13800 },
-  { week: 'Minggu 3', ctr: 2.5, cpc: 520, roas: 3.8, costPerResult: 13500 },
-  { week: 'Minggu 4', ctr: 2.4, cpc: 540, roas: 3.6, costPerResult: 13600 },
-  { week: 'Minggu 5', ctr: 2.7, cpc: 500, roas: 4.1, costPerResult: 12800 },
-  { week: 'Minggu 6', ctr: 2.8, cpc: 480, roas: 4.3, costPerResult: 12400 },
-];
-
-// Device breakdown (tersedia di Meta Ads)
+// device_platform breakdown
 export const deviceBreakdown = [
-  { name: 'Mobile - Android', impressions: 720000, percentage: 39 },
-  { name: 'Mobile - iOS', impressions: 680000, percentage: 36.9 },
-  { name: 'Desktop', impressions: 320000, percentage: 17.3 },
-  { name: 'Tablet', impressions: 125000, percentage: 6.8 },
+  { device_platform: 'mobile', impressions: '1400000', inline_link_clicks: '36100', spend: '18732000' },
+  { device_platform: 'desktop', impressions: '320000', inline_link_clicks: '6400', spend: '4264000' },
+  { device_platform: 'tablet', impressions: '125000', inline_link_clicks: '2700', spend: '1584000' },
 ];
