@@ -24,10 +24,34 @@ export const campaignFormSchema = {
   },
   status: { 
     type: 'enum', 
-    required: false, 
-    values: ['ACTIVE', 'PAUSED', 'DELETED', 'ARCHIVED'],
+    required: true, 
+    values: ['ACTIVE', 'PAUSED'],
     default: 'PAUSED',
-    description: 'Campaign status'
+    description: 'Campaign status (only ACTIVE or PAUSED during creation)'
+  },
+  buying_type: { 
+    type: 'enum', 
+    required: true, 
+    values: ['AUCTION', 'RESERVED'],
+    default: 'AUCTION',
+    description: 'Buying type (AUCTION for most campaigns)'
+  },
+  bid_strategy: { 
+    type: 'enum', 
+    required: true, 
+    values: ['LOWEST_COST_WITHOUT_CAP', 'COST_CAP', 'HIGHEST_CPM', 'LOWEST_COST_WITH_MIN_ROAS'],
+    default: 'LOWEST_COST_WITHOUT_CAP',
+    description: 'Bidding strategy'
+  },
+  daily_budget: { 
+    type: 'string', 
+    required: false, 
+    description: 'Daily budget in cents (e.g. 500000 = Rp 5,000). Required if lifetime_budget not set'
+  },
+  lifetime_budget: { 
+    type: 'string', 
+    required: false, 
+    description: 'Lifetime budget in cents. Required if daily_budget not set'
   },
   start_time: { 
     type: 'string', 
@@ -39,22 +63,10 @@ export const campaignFormSchema = {
     required: false, 
     description: 'ISO 8601 datetime'
   },
-  daily_budget: { 
-    type: 'string', 
+  special_ad_categories: { 
+    type: 'array', 
     required: false, 
-    description: 'Daily budget in cents (e.g. 500000 = Rp 5,000)'
-  },
-  lifetime_budget: { 
-    type: 'string', 
-    required: false, 
-    description: 'Lifetime budget in cents'
-  },
-  bid_strategy: { 
-    type: 'enum', 
-    required: false, 
-    values: ['LOWEST_COST_WITHOUT_CAP', 'COST_CAP', 'HIGHEST_CPM', 'LOWEST_COST_WITH_MIN_ROAS'],
-    default: 'LOWEST_COST_WITHOUT_CAP',
-    description: 'Bidding strategy'
+    description: 'Array of special ad categories (e.g. ["CREDIT", "HOUSING", "EMPLOYMENT", "POLITICS"]). Required if promoting special categories'
   },
 };
 
@@ -66,35 +78,17 @@ export const adSetFormSchema = {
   campaign_id: { type: 'string', required: true, description: 'Parent campaign ID' },
   status: { 
     type: 'enum', 
-    required: false, 
-    values: ['ACTIVE', 'PAUSED', 'DELETED', 'ARCHIVED'],
+    required: true, 
+    values: ['ACTIVE', 'PAUSED'],
     default: 'PAUSED',
-    description: 'Ad set status'
+    description: 'Ad set status (only ACTIVE or PAUSED during creation)'
   },
-  start_time: { 
-    type: 'string', 
-    required: false, 
-    description: 'ISO 8601 datetime'
-  },
-  end_time: { 
-    type: 'string', 
-    required: false, 
-    description: 'ISO 8601 datetime'
-  },
-  daily_budget: { 
-    type: 'string', 
-    required: false, 
-    description: 'Daily budget in cents'
-  },
-  lifetime_budget: { 
-    type: 'string', 
-    required: false, 
-    description: 'Lifetime budget in cents'
-  },
-  bid_amount: { 
-    type: 'string', 
-    required: false, 
-    description: 'Bid amount in cents'
+  billing_event: { 
+    type: 'enum', 
+    required: true, 
+    values: ['IMPRESSIONS', 'LINK_CLICKS', 'APP_INSTALLS', 'POST_ENGAGEMENT', 'REACH'],
+    default: 'IMPRESSIONS',
+    description: 'Billing event (when you pay)'
   },
   optimization_goal: { 
     type: 'enum', 
@@ -114,6 +108,36 @@ export const adSetFormSchema = {
       interests: 'array<object>',
     }
   },
+  daily_budget: { 
+    type: 'string', 
+    required: false, 
+    description: 'Daily budget in cents. Required if lifetime_budget not set'
+  },
+  lifetime_budget: { 
+    type: 'string', 
+    required: false, 
+    description: 'Lifetime budget in cents. Required if daily_budget not set'
+  },
+  bid_amount: { 
+    type: 'string', 
+    required: false, 
+    description: 'Bid amount in cents'
+  },
+  start_time: { 
+    type: 'string', 
+    required: false, 
+    description: 'ISO 8601 datetime'
+  },
+  end_time: { 
+    type: 'string', 
+    required: false, 
+    description: 'ISO 8601 datetime'
+  },
+  promoted_object: { 
+    type: 'object', 
+    required: false, 
+    description: 'Promoted object (required for some objectives like app installs)'
+  },
 };
 
 // ============================================
@@ -124,22 +148,15 @@ export const adFormSchema = {
   adset_id: { type: 'string', required: true, description: 'Parent ad set ID' },
   status: { 
     type: 'enum', 
-    required: false, 
-    values: ['ACTIVE', 'PAUSED', 'DELETED', 'ARCHIVED'],
-    default: 'PAUSED',
-    description: 'Ad status'
-  },
-  creative: { 
-    type: 'object', 
     required: true, 
-    description: 'Ad creative specification',
-    properties: {
-      title: { type: 'string', required: true, description: 'Ad headline' },
-      body: { type: 'string', required: true, description: 'Ad primary text' },
-      link_url: { type: 'string', required: true, description: 'Destination URL' },
-      image_url: { type: 'string', required: false, description: 'Image URL' },
-      video_url: { type: 'string', required: false, description: 'Video URL' },
-    }
+    values: ['ACTIVE', 'PAUSED'],
+    default: 'PAUSED',
+    description: 'Ad status (only ACTIVE or PAUSED during creation)'
+  },
+  creative_id: { 
+    type: 'string', 
+    required: true, 
+    description: 'Ad creative ID (must create creative first via ads_create_creative)'
   },
 };
 

@@ -9,11 +9,13 @@ export default function CampaignForm() {
     name: '',
     objective: '',
     status: 'PAUSED',
-    start_time: '',
-    end_time: '',
+    buying_type: 'AUCTION',
+    bid_strategy: 'LOWEST_COST_WITHOUT_CAP',
     daily_budget: '',
     lifetime_budget: '',
-    bid_strategy: 'LOWEST_COST_WITHOUT_CAP',
+    start_time: '',
+    end_time: '',
+    special_ad_categories: '',
   });
 
   const handleChange = (field: string, value: string) => {
@@ -89,9 +91,9 @@ export default function CampaignForm() {
 
           {/* Status */}
           <div>
-            <label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+            <label className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
               Status
-              <span className="text-gray-400 ml-1">(optional)</span>
+              <span className="text-red-500">*</span>
             </label>
             <select
               value={formData.status}
@@ -100,6 +102,40 @@ export default function CampaignForm() {
             >
               <option value="PAUSED">Paused</option>
               <option value="ACTIVE">Active</option>
+            </select>
+          </div>
+
+          {/* Buying Type */}
+          <div>
+            <label className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Buying Type
+              <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={formData.buying_type}
+              onChange={(e) => handleChange('buying_type', e.target.value)}
+              className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
+            >
+              <option value="AUCTION">Auction</option>
+              <option value="RESERVED">Reserved</option>
+            </select>
+          </div>
+
+          {/* Bid Strategy */}
+          <div>
+            <label className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Bid Strategy
+              <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={formData.bid_strategy}
+              onChange={(e) => handleChange('bid_strategy', e.target.value)}
+              className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
+            >
+              <option value="LOWEST_COST_WITHOUT_CAP">Lowest Cost (Highest Volume)</option>
+              <option value="COST_CAP">Cost Cap</option>
+              <option value="HIGHEST_CPM">Highest CPM</option>
+              <option value="LOWEST_COST_WITH_MIN_ROAS">Lowest Cost with Min ROAS</option>
             </select>
           </div>
 
@@ -162,22 +198,20 @@ export default function CampaignForm() {
             </div>
           </div>
 
-          {/* Bid Strategy */}
+          {/* Special Ad Categories */}
           <div>
             <label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 block">
-              Bid Strategy
+              Special Ad Categories
               <span className="text-gray-400 ml-1">(optional)</span>
             </label>
-            <select
-              value={formData.bid_strategy}
-              onChange={(e) => handleChange('bid_strategy', e.target.value)}
+            <input
+              type="text"
+              value={formData.special_ad_categories}
+              onChange={(e) => handleChange('special_ad_categories', e.target.value)}
               className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
-            >
-              <option value="LOWEST_COST_WITHOUT_CAP">Lowest Cost (Highest Volume)</option>
-              <option value="COST_CAP">Cost Cap</option>
-              <option value="HIGHEST_CPM">Highest CPM</option>
-              <option value="LOWEST_COST_WITH_MIN_ROAS">Lowest Cost with Min ROAS</option>
-            </select>
+              placeholder='["CREDIT", "HOUSING", "EMPLOYMENT", "POLITICS"]'
+            />
+            <p className="text-[9px] text-gray-400 mt-1">Required if promoting credit, housing, employment, or social issues</p>
           </div>
         </div>
 
@@ -186,7 +220,7 @@ export default function CampaignForm() {
             Cancel
           </Link>
           <button 
-            disabled={!formData.name || !formData.objective}
+            disabled={!formData.name || !formData.objective || !formData.status || !formData.buying_type || !formData.bid_strategy}
             className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="w-3.5 h-3.5" />

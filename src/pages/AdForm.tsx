@@ -10,11 +10,7 @@ export default function AdForm() {
     name: '',
     adset_id: '',
     status: 'PAUSED',
-    creative_title: '',
-    creative_body: '',
-    creative_link_url: '',
-    creative_image_url: '',
-    creative_video_url: '',
+    creative_id: '',
   });
 
   const handleChange = (field: string, value: string) => {
@@ -24,12 +20,8 @@ export default function AdForm() {
   const fields = [
     { name: 'name', type: 'string', required: true, value: formData.name },
     { name: 'adset_id', type: 'string', required: true, value: formData.adset_id },
-    { name: 'status', type: 'enum', required: false, value: formData.status },
-    { name: 'creative.title', type: 'string', required: true, value: formData.creative_title },
-    { name: 'creative.body', type: 'string', required: true, value: formData.creative_body },
-    { name: 'creative.link_url', type: 'string', required: true, value: formData.creative_link_url },
-    { name: 'creative.image_url', type: 'string', required: false, value: formData.creative_image_url },
-    { name: 'creative.video_url', type: 'string', required: false, value: formData.creative_video_url },
+    { name: 'status', type: 'enum', required: true, value: formData.status },
+    { name: 'creative_id', type: 'string', required: true, value: formData.creative_id },
   ];
 
   return (
@@ -90,9 +82,9 @@ export default function AdForm() {
 
           {/* Status */}
           <div>
-            <label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+            <label className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
               Status
-              <span className="text-gray-400 ml-1">(optional)</span>
+              <span className="text-red-500">*</span>
             </label>
             <select
               value={formData.status}
@@ -104,83 +96,22 @@ export default function AdForm() {
             </select>
           </div>
 
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Creative</h3>
-
-            {/* Title */}
-            <div className="mb-3">
-              <label className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Headline
-                <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={formData.creative_title}
-                onChange={(e) => handleChange('creative_title', e.target.value)}
-                className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
-                placeholder="e.g. SmartWatch Pro - Feature Rich"
-              />
-            </div>
-
-            {/* Body */}
-            <div className="mb-3">
-              <label className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Primary Text
-                <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                value={formData.creative_body}
-                onChange={(e) => handleChange('creative_body', e.target.value)}
-                rows={3}
-                className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
-                placeholder="e.g. Track your health, stay connected. Order now with 20% off!"
-              />
-            </div>
-
-            {/* Link URL */}
-            <div className="mb-3">
-              <label className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Website URL
-                <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="url"
-                value={formData.creative_link_url}
-                onChange={(e) => handleChange('creative_link_url', e.target.value)}
-                className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
-                placeholder="https://example.com/product"
-              />
-            </div>
-
-            {/* Image URL */}
-            <div className="mb-3">
-              <label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 block">
-                Image URL
-                <span className="text-gray-400 ml-1">(optional)</span>
-              </label>
-              <input
-                type="url"
-                value={formData.creative_image_url}
-                onChange={(e) => handleChange('creative_image_url', e.target.value)}
-                className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
-                placeholder="https://example.com/image.jpg"
-              />
-            </div>
-
-            {/* Video URL */}
-            <div>
-              <label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 block">
-                Video URL
-                <span className="text-gray-400 ml-1">(optional)</span>
-              </label>
-              <input
-                type="url"
-                value={formData.creative_video_url}
-                onChange={(e) => handleChange('creative_video_url', e.target.value)}
-                className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
-                placeholder="https://example.com/video.mp4"
-              />
-            </div>
+          {/* Creative ID */}
+          <div>
+            <label className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Creative ID
+              <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={formData.creative_id}
+              onChange={(e) => handleChange('creative_id', e.target.value)}
+              className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
+              placeholder="e.g. 23851234567893001"
+            />
+            <p className="text-[9px] text-gray-400 mt-1">
+              Must create creative first via <span className="font-mono">ads_create_creative</span>
+            </p>
           </div>
         </div>
 
@@ -189,7 +120,7 @@ export default function AdForm() {
             Cancel
           </Link>
           <button 
-            disabled={!formData.name || !formData.adset_id || !formData.creative_title || !formData.creative_body || !formData.creative_link_url}
+            disabled={!formData.name || !formData.adset_id || !formData.status || !formData.creative_id}
             className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="w-3.5 h-3.5" />

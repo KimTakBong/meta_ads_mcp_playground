@@ -10,13 +10,15 @@ export default function AdSetForm() {
     name: '',
     campaign_id: '',
     status: 'PAUSED',
-    start_time: '',
-    end_time: '',
+    billing_event: 'IMPRESSIONS',
+    optimization_goal: '',
+    targeting: '',
     daily_budget: '',
     lifetime_budget: '',
     bid_amount: '',
-    optimization_goal: '',
-    targeting: '',
+    start_time: '',
+    end_time: '',
+    promoted_object: '',
   });
 
   const handleChange = (field: string, value: string) => {
@@ -87,6 +89,41 @@ export default function AdSetForm() {
             </select>
           </div>
 
+          {/* Status */}
+          <div>
+            <label className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Status
+              <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={formData.status}
+              onChange={(e) => handleChange('status', e.target.value)}
+              className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
+            >
+              <option value="PAUSED">Paused</option>
+              <option value="ACTIVE">Active</option>
+            </select>
+          </div>
+
+          {/* Billing Event */}
+          <div>
+            <label className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Billing Event
+              <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={formData.billing_event}
+              onChange={(e) => handleChange('billing_event', e.target.value)}
+              className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
+            >
+              <option value="IMPRESSIONS">Impressions</option>
+              <option value="LINK_CLICKS">Link Clicks</option>
+              <option value="APP_INSTALLS">App Installs</option>
+              <option value="POST_ENGAGEMENT">Post Engagement</option>
+              <option value="REACH">Reach</option>
+            </select>
+          </div>
+
           {/* Optimization Goal */}
           <div>
             <label className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -108,20 +145,19 @@ export default function AdSetForm() {
             </select>
           </div>
 
-          {/* Status */}
+          {/* Targeting */}
           <div>
-            <label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 block">
-              Status
-              <span className="text-gray-400 ml-1">(optional)</span>
+            <label className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Targeting (JSON)
+              <span className="text-red-500">*</span>
             </label>
-            <select
-              value={formData.status}
-              onChange={(e) => handleChange('status', e.target.value)}
-              className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
-            >
-              <option value="PAUSED">Paused</option>
-              <option value="ACTIVE">Active</option>
-            </select>
+            <textarea
+              value={formData.targeting}
+              onChange={(e) => handleChange('targeting', e.target.value)}
+              rows={4}
+              className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
+              placeholder='{"age_min": 25, "age_max": 45, "geo_locations": {"countries": ["ID"]}}'
+            />
           </div>
 
           {/* Budget */}
@@ -167,18 +203,18 @@ export default function AdSetForm() {
             </div>
           </div>
 
-          {/* Targeting */}
+          {/* Promoted Object */}
           <div>
-            <label className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Targeting (JSON)
-              <span className="text-red-500">*</span>
+            <label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+              Promoted Object (JSON)
+              <span className="text-gray-400 ml-1">(optional, required for some objectives)</span>
             </label>
             <textarea
-              value={formData.targeting}
-              onChange={(e) => handleChange('targeting', e.target.value)}
-              rows={4}
+              value={formData.promoted_object}
+              onChange={(e) => handleChange('promoted_object', e.target.value)}
+              rows={2}
               className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
-              placeholder='{"age_min": 25, "age_max": 45, "geo_locations": {"countries": ["ID"]}}'
+              placeholder='{"page_id": "123456789"}'
             />
           </div>
         </div>
@@ -188,7 +224,7 @@ export default function AdSetForm() {
             Cancel
           </Link>
           <button 
-            disabled={!formData.name || !formData.campaign_id || !formData.optimization_goal || !formData.targeting}
+            disabled={!formData.name || !formData.campaign_id || !formData.status || !formData.billing_event || !formData.optimization_goal || !formData.targeting}
             className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="w-3.5 h-3.5" />
