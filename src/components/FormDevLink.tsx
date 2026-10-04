@@ -22,8 +22,10 @@ export default function FormDevLink({ children, toolName, fields, schema }: Form
   // Build JSON payload from form fields
   const payload: Record<string, any> = {};
   fields.forEach(field => {
-    if (field.value !== '' && field.value !== null && field.value !== undefined) {
-      payload[field.name] = field.value;
+    // Always include required fields, even if empty
+    // Only skip optional fields that are empty
+    if (field.required || (field.value !== '' && field.value !== null && field.value !== undefined)) {
+      payload[field.name] = field.value === '' ? null : field.value;
     }
   });
 
@@ -123,20 +125,23 @@ function formatPayloadWithColors(payload: Record<string, any>, schema: Record<st
   Object.entries(payload).forEach(([key, value], index) => {
     const fieldSchema = schema[key];
     const isRequired = fieldSchema?.required === true;
-    const borderColor = isRequired ? 'border-l-2 border-red-500 pl-2' : 'border-l-2 border-gray-600 pl-2';
-    const valueColor = typeof value === 'string' ? 'text-amber-300' : 
+    const isEmpty = value === null || value === '' || value === undefined;
+    
+    const valueColor = value === null ? 'text-red-400' :
+                       typeof value === 'string' ? 'text-amber-300' : 
                        typeof value === 'number' ? 'text-purple-300' : 
                        typeof value === 'boolean' ? 'text-cyan-300' : 'text-blue-300';
 
     lines.push(
-      <div key={key} className={`my-0.5 ${isRequired ? 'bg-red-900/10' : ''}`}>
+      <div key={key} className={`my-0.5 ${isRequired ? 'bg-red-900/10' : ''} ${isRequired && isEmpty ? 'border-l-2 border-red-500 pl-2' : ''}`}>
         <span className="text-gray-400">  "{key}"</span>
         <span className="text-gray-400">: </span>
         <span className={valueColor}>
-          {typeof value === 'string' ? `"${value}"` : JSON.stringify(value)}
+          {value === null ? 'null' : typeof value === 'string' ? `"${value}"` : JSON.stringify(value)}
         </span>
         {index < Object.entries(payload).length - 1 && <span className="text-gray-400">,</span>}
         {isRequired && <span className="text-red-400 text-[8px] ml-2">● required</span>}
+        {isRequired && isEmpty && <span className="text-red-400 text-[8px] ml-2">⚠️ missing!</span>}
       </div>
     );
   });
