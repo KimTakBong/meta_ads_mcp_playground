@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { campaigns, accountPerformanceTrend, opportunityScore, anomalySignals } from '../data/mockData';
+import { campaignSchema, performanceTrendSchema, opportunityScoreSchema, anomalySignalSchema, campaignSummarySchema } from '../data/schemas';
 import { formatCurrency, formatNumber, getResults, getCostPerResult, getObjectiveColor, getObjectiveLabel } from '../utils/format';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { DollarSign, Eye, MousePointerClick, TrendingUp, Award, AlertTriangle, ArrowRight, Activity } from 'lucide-react';
@@ -47,8 +48,8 @@ export default function Dashboard() {
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Account Summary</h3>
           <DevLink clipboards={[
-            { title: 'Campaigns Data', toolName: 'ads_get_ad_entities', data: campaigns },
-            { title: 'Performance Trend', toolName: 'ads_insights_performance_trend', data: accountPerformanceTrend }
+            { title: 'Campaigns Data', toolName: 'ads_get_ad_entities', schema: campaignSchema, data: campaigns },
+            { title: 'Performance Trend', toolName: 'ads_insights_performance_trend', schema: performanceTrendSchema, data: accountPerformanceTrend }
           ]}>
             <span className="font-mono">&lt;dev&gt;</span>
           </DevLink>
@@ -102,8 +103,8 @@ export default function Dashboard() {
         <div className="flex items-center justify-between mb-1">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Performance Trend</h3>
           <DevLink clipboards={[
-            { title: 'Performance Trend', toolName: 'ads_insights_performance_trend', data: accountPerformanceTrend },
-            { title: 'Campaigns Summary', toolName: 'ads_get_ad_entities', data: campaigns }
+            { title: 'Performance Trend', toolName: 'ads_insights_performance_trend', schema: performanceTrendSchema, data: accountPerformanceTrend },
+            { title: 'Campaigns Summary', toolName: 'ads_get_ad_entities', schema: campaignSchema, data: campaigns }
           ]}>
             <span className="font-mono">&lt;dev&gt;</span>
           </DevLink>
@@ -144,8 +145,8 @@ export default function Dashboard() {
                 <p className="text-[10px] text-gray-500 dark:text-gray-400">ads_get_ad_entities • level: campaign</p>
               </div>
               <DevLink clipboards={[
-                { title: 'Campaigns', toolName: 'ads_get_ad_entities', data: campaigns },
-                { title: 'Opportunity Score', toolName: 'ads_get_opportunity_score', data: opportunityScore }
+                { title: 'Campaigns', toolName: 'ads_get_ad_entities', schema: campaignSchema, data: campaigns },
+                { title: 'Opportunity Score', toolName: 'ads_get_opportunity_score', schema: opportunityScoreSchema, data: opportunityScore }
               ]}>
                 <span className="font-mono">&lt;dev&gt;</span>
               </DevLink>
@@ -223,8 +224,8 @@ export default function Dashboard() {
         <div className="flex items-center justify-between mb-1">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Campaign Performance</h3>
           <DevLink clipboards={[
-            { title: 'Campaign Performance', toolName: 'ads_get_ad_entities', data: campaignSummary },
-            { title: 'Anomaly Signals', toolName: 'ads_insights_anomaly_signal', data: anomalySignals }
+            { title: 'Campaign Performance', toolName: 'ads_get_ad_entities', schema: campaignSummarySchema, data: campaignSummary },
+            { title: 'Anomaly Signals', toolName: 'ads_insights_anomaly_signal', schema: anomalySignalSchema, data: anomalySignals }
           ]}>
             <span className="font-mono">&lt;dev&gt;</span>
           </DevLink>

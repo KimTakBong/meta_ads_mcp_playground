@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { campaigns, adSets } from '../data/mockData';
+import { campaignSchema, adSetSchema } from '../data/schemas';
 import { formatCurrency, formatNumber, getResults, getCostPerResult, getObjectiveColor, getObjectiveLabel } from '../utils/format';
 import { ExternalLink } from 'lucide-react';
 import DevLink from '../components/DevLink';
@@ -14,8 +15,8 @@ export default function CampaignsPage() {
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">ads_get_ad_entities • level: campaign</p>
           </div>
           <DevLink clipboards={[
-            { title: 'Campaigns', toolName: 'ads_get_ad_entities', data: campaigns },
-            { title: 'Ad Sets', toolName: 'ads_get_ad_entities', data: adSets }
+            { title: 'Campaigns', toolName: 'ads_get_ad_entities', schema: campaignSchema, data: campaigns },
+            { title: 'Ad Sets', toolName: 'ads_get_ad_entities', schema: adSetSchema, data: adSets }
           ]}>
             <span className="font-mono">&lt;dev&gt;</span>
           </DevLink>

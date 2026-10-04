@@ -1,9 +1,10 @@
 import { useState, ReactNode } from 'react';
-import { X, Code2, Copy, Check } from 'lucide-react';
+import { X, Code2, Copy, Check, Database, FileJson } from 'lucide-react';
 
 interface ClipboardItem {
   title: string;
   toolName: string;
+  schema: unknown;
   data: unknown;
 }
 
@@ -27,14 +28,12 @@ export default function DevLink({ children, clipboards }: DevLinkProps) {
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setIsOpen(false)}
           />
 
-          {/* Modal */}
-          <div className="relative w-full max-w-4xl max-h-[85vh] bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl flex flex-col overflow-hidden">
+          <div className="relative w-full max-w-6xl max-h-[90vh] bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl flex flex-col overflow-hidden">
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
               <div className="flex items-center gap-2">
@@ -52,7 +51,7 @@ export default function DevLink({ children, clipboards }: DevLinkProps) {
               </button>
             </div>
 
-            {/* Content - 2 rows */}
+            {/* Content */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {clipboards.map((item, index) => (
                 <ClipboardPanel key={index} item={item} />
@@ -66,50 +65,95 @@ export default function DevLink({ children, clipboards }: DevLinkProps) {
 }
 
 function ClipboardPanel({ item }: { item: ClipboardItem }) {
-  const [copied, setCopied] = useState(false);
-  const jsonString = JSON.stringify(item.data, null, 2);
+  const [copiedCol, setCopiedCol] = useState<'schema' | 'data' | null>(null);
+  const schemaString = JSON.stringify(item.schema, null, 2);
+  const dataString = JSON.stringify(item.data, null, 2);
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(jsonString);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopy = async (type: 'schema' | 'data') => {
+    const text = type === 'schema' ? schemaString : dataString;
+    await navigator.clipboard.writeText(text);
+    setCopiedCol(type);
+    setTimeout(() => setCopiedCol(null), 2000);
   };
 
   return (
-    <div className="bg-gray-900 dark:bg-black rounded-xl border border-gray-700 dark:border-gray-800 overflow-hidden">
+    <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
       {/* Panel Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-800 dark:bg-gray-900 border-b border-gray-700 dark:border-gray-800">
+      <div className="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-medium text-gray-300">{item.title}</span>
-          <span className="text-[9px] px-1.5 py-0.5 bg-blue-900/50 text-blue-300 rounded font-mono">
+          <span className="text-[11px] font-medium text-gray-900 dark:text-gray-100">{item.title}</span>
+          <span className="text-[9px] px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded font-mono">
             {item.toolName}
           </span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-[9px] text-gray-500 font-mono">{jsonString.length} chars</span>
-          <button
-            onClick={handleCopy}
-            className="flex items-center gap-1 px-2 py-1 rounded text-[10px] text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
-          >
-            {copied ? (
-              <>
-                <Check className="w-3 h-3 text-emerald-400" />
-                <span className="text-emerald-400">Copied!</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-3 h-3" />
-                <span>Copy</span>
-              </>
-            )}
-          </button>
-        </div>
       </div>
 
-      {/* JSON Content */}
-      <pre className="p-4 text-[10px] text-gray-300 font-mono overflow-x-auto max-h-64 overflow-y-auto leading-relaxed">
-        {jsonString}
-      </pre>
+      {/* 2 Columns */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-gray-700">
+        {/* Column 1: Schema / Structure */}
+        <div className="bg-gray-900 dark:bg-black">
+          <div className="flex items-center justify-between px-3 py-1.5 bg-gray-800 dark:bg-gray-900 border-b border-gray-700 dark:border-gray-800">
+            <div className="flex items-center gap-1.5">
+              <Database className="w-3 h-3 text-emerald-400" />
+              <span className="text-[10px] font-medium text-emerald-400">Schema / Structure</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] text-gray-500 font-mono">{schemaString.length} chars</span>
+              <button
+                onClick={() => handleCopy('schema')}
+                className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
+              >
+                {copiedCol === 'schema' ? (
+                  <>
+                    <Check className="w-3 h-3 text-emerald-400" />
+                    <span className="text-emerald-400">Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3 h-3" />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+          <pre className="p-3 text-[10px] text-emerald-300 font-mono overflow-x-auto max-h-80 overflow-y-auto leading-relaxed">
+            {schemaString}
+          </pre>
+        </div>
+
+        {/* Column 2: Actual Data */}
+        <div className="bg-gray-900 dark:bg-black">
+          <div className="flex items-center justify-between px-3 py-1.5 bg-gray-800 dark:bg-gray-900 border-b border-gray-700 dark:border-gray-800">
+            <div className="flex items-center gap-1.5">
+              <FileJson className="w-3 h-3 text-blue-400" />
+              <span className="text-[10px] font-medium text-blue-400">Actual Data</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] text-gray-500 font-mono">{dataString.length} chars</span>
+              <button
+                onClick={() => handleCopy('data')}
+                className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
+              >
+                {copiedCol === 'data' ? (
+                  <>
+                    <Check className="w-3 h-3 text-emerald-400" />
+                    <span className="text-emerald-400">Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3 h-3" />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+          <pre className="p-3 text-[10px] text-blue-300 font-mono overflow-x-auto max-h-80 overflow-y-auto leading-relaxed">
+            {dataString}
+          </pre>
+        </div>
+      </div>
     </div>
   );
 }

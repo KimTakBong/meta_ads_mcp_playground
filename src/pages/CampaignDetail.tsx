@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { campaigns, adSets } from '../data/mockData';
+import { campaignSchema, adSetSchema } from '../data/schemas';
 import { formatCurrency, formatNumber, getResults, getCostPerResult, getObjectiveColor, getObjectiveLabel } from '../utils/format';
 import { ArrowLeft } from 'lucide-react';
 import DevLink from '../components/DevLink';
@@ -23,8 +24,8 @@ export default function CampaignDetail() {
         <div className="flex items-center gap-2">
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{campaign.campaign_name}</h2>
           <DevLink clipboards={[
-            { title: 'Campaign Data', toolName: 'ads_get_ad_entities', data: campaign },
-            { title: 'Ad Sets Data', toolName: 'ads_get_ad_entities', data: campaignAdSets }
+            { title: 'Campaign Data', toolName: 'ads_get_ad_entities', schema: campaignSchema, data: campaign },
+            { title: 'Ad Sets Data', toolName: 'ads_get_ad_entities', schema: adSetSchema, data: campaignAdSets }
           ]}>
             <span className="font-mono">&lt;dev&gt;</span>
           </DevLink>

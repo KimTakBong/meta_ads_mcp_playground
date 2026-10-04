@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { ads } from '../data/mockData';
+import { adSchema } from '../data/schemas';
 import { formatCurrency, formatNumber, getResults, getCostPerResult } from '../utils/format';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 import DevLink from '../components/DevLink';
@@ -21,8 +22,8 @@ export default function AdDetail() {
         <div className="flex items-center gap-2">
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{ad.ad_name}</h2>
           <DevLink clipboards={[
-            { title: 'Ad Data', toolName: 'ads_get_ad_entities', data: ad },
-            { title: 'Creative Details', toolName: 'ads_get_ad_entities', data: ad.creative }
+            { title: 'Ad Data', toolName: 'ads_get_ad_entities', schema: adSchema, data: ad },
+            { title: 'Creative Details', toolName: 'ads_get_ad_entities', schema: adSchema.creative, data: ad.creative }
           ]}>
             <span className="font-mono">&lt;dev&gt;</span>
           </DevLink>

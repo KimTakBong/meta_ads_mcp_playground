@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { adSets, ads } from '../data/mockData';
+import { adSetSchema, adSchema } from '../data/schemas';
 import { formatCurrency, formatNumber, getResults, getCostPerResult } from '../utils/format';
 import { ArrowLeft } from 'lucide-react';
 import DevLink from '../components/DevLink';
@@ -23,8 +24,8 @@ export default function AdSetDetail() {
         <div className="flex items-center gap-2">
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{adSet.adset_name}</h2>
           <DevLink clipboards={[
-            { title: 'Ad Set Data', toolName: 'ads_get_ad_entities', data: adSet },
-            { title: 'Ads Data', toolName: 'ads_get_ad_entities', data: adSetAds }
+            { title: 'Ad Set Data', toolName: 'ads_get_ad_entities', schema: adSetSchema, data: adSet },
+            { title: 'Ads Data', toolName: 'ads_get_ad_entities', schema: adSchema, data: adSetAds }
           ]}>
             <span className="font-mono">&lt;dev&gt;</span>
           </DevLink>
