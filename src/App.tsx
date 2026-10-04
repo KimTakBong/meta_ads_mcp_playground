@@ -18,12 +18,16 @@ import {
   PieChart as PieChartIcon,
   FileText,
   HelpCircle,
+  Smartphone,
+  Zap,
+  Award,
 } from 'lucide-react';
 import MetricCard from './components/MetricCard';
 import PerformanceChart from './components/PerformanceChart';
 import CampaignTable from './components/CampaignTable';
 import AudienceChart, { PlatformChart } from './components/AudienceChart';
 import WeeklyTrendChart from './components/WeeklyTrendChart';
+import PlacementsBreakdown from './components/PlacementsBreakdown';
 import { overviewMetrics } from './data/mockData';
 
 export default function App() {
@@ -115,7 +119,7 @@ export default function App() {
               >
                 <BarChart3 className="w-5 h-5 text-gray-600" />
               </button>
-              <div className="relative">
+              <div className="relative hidden md:block">
                 <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
@@ -127,7 +131,7 @@ export default function App() {
             <div className="flex items-center gap-3">
               <button className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-gray-100 transition-colors">
                 <Calendar className="w-4 h-4" />
-                <span>7 Jan - 20 Jan 2026</span>
+                <span className="hidden sm:inline">07 Jan - 20 Jan 2026</span>
                 <ChevronDown className="w-3.5 h-3.5" />
               </button>
               <button className="p-2.5 rounded-xl hover:bg-gray-100 transition-colors relative">
@@ -144,10 +148,12 @@ export default function App() {
         {/* Content */}
         <div className="p-6 space-y-6">
           {/* Page Title */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">Dashboard Overview</h2>
-              <p className="text-sm text-gray-500 mt-1">Pantau performa iklan Meta Anda secara real-time</p>
+              <p className="text-sm text-gray-500 mt-1">
+                Pantau performa iklan Meta (Facebook & Instagram) secara real-time
+              </p>
             </div>
             <div className="flex items-center gap-2">
               <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors shadow-sm">
@@ -161,14 +167,14 @@ export default function App() {
             </div>
           </div>
 
-          {/* Metric Cards */}
+          {/* Metric Cards - Row 1 */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <MetricCard
-              title="Total Spending"
+              title="Amount Spent"
               value={formatCurrency(overviewMetrics.totalSpend)}
               change={8.2}
               icon={<DollarSign className="w-5 h-5" />}
-              subtitle="Budget terpakai"
+              subtitle="Total budget terpakai"
             />
             <MetricCard
               title="Impressions"
@@ -178,11 +184,11 @@ export default function App() {
               subtitle="Total tayangan iklan"
             />
             <MetricCard
-              title="Total Clicks"
-              value={formatNumber(overviewMetrics.totalClicks)}
+              title="Link Clicks"
+              value={formatNumber(overviewMetrics.totalLinkClicks)}
               change={5.8}
               icon={<MousePointerClick className="w-5 h-5" />}
-              subtitle="Klik pada iklan"
+              subtitle={`${formatNumber(overviewMetrics.totalAllClicks)} all clicks`}
             />
             <MetricCard
               title="ROAS"
@@ -193,35 +199,35 @@ export default function App() {
             />
           </div>
 
-          {/* Second Row Metrics */}
+          {/* Metric Cards - Row 2 */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <MetricCard
               title="Reach"
               value={formatNumber(overviewMetrics.totalReach)}
               change={9.1}
               icon={<Users className="w-5 h-5" />}
-              subtitle="Orang unik yang dijangkau"
+              subtitle={`Frequency: ${overviewMetrics.frequency}x`}
             />
             <MetricCard
-              title="Conversions"
-              value={formatNumber(overviewMetrics.totalConversions)}
+              title="Results (Conversions)"
+              value={formatNumber(overviewMetrics.totalResults)}
               change={18.7}
               icon={<Target className="w-5 h-5" />}
-              subtitle="Total konversi"
+              subtitle={`Cost/result: Rp ${overviewMetrics.avgCostPerResult.toLocaleString('id-ID')}`}
             />
             <MetricCard
-              title="Avg. CTR"
+              title="Link CTR"
               value={`${overviewMetrics.avgCTR}%`}
               change={3.2}
-              icon={<MousePointerClick className="w-5 h-5" />}
-              subtitle="Click-through rate"
+              icon={<Zap className="w-5 h-5" />}
+              subtitle={`All CTR: ${overviewMetrics.avgAllCTR}%`}
             />
             <MetricCard
-              title="Avg. CPC"
-              value={`Rp ${overviewMetrics.avgCPC}`}
+              title="CPC (Link Click)"
+              value={`Rp ${overviewMetrics.avgCPC.toLocaleString('id-ID')}`}
               change={-4.5}
               icon={<DollarSign className="w-5 h-5" />}
-              subtitle="Cost per click"
+              subtitle={`CPM: Rp ${overviewMetrics.avgCPM.toLocaleString('id-ID')}`}
             />
           </div>
 
@@ -233,6 +239,9 @@ export default function App() {
             <WeeklyTrendChart />
             <AudienceChart />
           </div>
+
+          {/* Placements Breakdown */}
+          <PlacementsBreakdown />
 
           {/* Platform + Campaign Table */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -247,7 +256,7 @@ export default function App() {
           {/* Footer */}
           <div className="text-center py-4 border-t border-gray-100">
             <p className="text-xs text-gray-400">
-              Meta Ads Dashboard © 2026 • Data diperbarui setiap 15 menit • Last sync: 20 Jan 2026, 14:30 WIB
+              Meta Ads Dashboard © 2026 • Data disinkronkan dari Meta Marketing API • Last sync: 20 Jan 2026, 14:30 WIB
             </p>
           </div>
         </div>

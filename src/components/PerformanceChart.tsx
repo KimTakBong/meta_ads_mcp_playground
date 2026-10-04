@@ -2,17 +2,18 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { dailyPerformance } from '../data/mockData';
 import { useState } from 'react';
 
-type MetricType = 'impressions' | 'clicks' | 'spend' | 'conversions';
+type MetricType = 'impressions' | 'linkClicks' | 'spend' | 'conversions' | 'reach';
 
 const metricConfig: Record<MetricType, { label: string; color: string; format: (v: number) => string }> = {
   impressions: { label: 'Impressions', color: '#3b82f6', format: (v) => `${(v / 1000).toFixed(0)}K` },
-  clicks: { label: 'Clicks', color: '#8b5cf6', format: (v) => `${(v / 1000).toFixed(1)}K` },
-  spend: { label: 'Spending (Rp)', color: '#f59e0b', format: (v) => `${(v / 1000000).toFixed(1)}Jt` },
+  reach: { label: 'Reach', color: '#06b6d4', format: (v) => `${(v / 1000).toFixed(0)}K` },
+  linkClicks: { label: 'Link Clicks', color: '#8b5cf6', format: (v) => `${(v / 1000).toFixed(1)}K` },
+  spend: { label: 'Amount Spent (Rp)', color: '#f59e0b', format: (v) => `${(v / 1000000).toFixed(1)}Jt` },
   conversions: { label: 'Conversions', color: '#10b981', format: (v) => `${v}` },
 };
 
 export default function PerformanceChart() {
-  const [activeMetrics, setActiveMetrics] = useState<MetricType[]>(['impressions', 'clicks']);
+  const [activeMetrics, setActiveMetrics] = useState<MetricType[]>(['impressions', 'linkClicks']);
 
   const toggleMetric = (metric: MetricType) => {
     setActiveMetrics((prev) =>
@@ -20,7 +21,7 @@ export default function PerformanceChart() {
     );
   };
 
-  const colors = ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981'];
+  const colors = ['#3b82f6', '#06b6d4', '#8b5cf6', '#f59e0b', '#10b981'];
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
