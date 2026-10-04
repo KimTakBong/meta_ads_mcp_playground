@@ -3,7 +3,7 @@ import { campaigns, accountPerformanceTrend, opportunityScore, anomalySignals } 
 import { formatCurrency, formatNumber, getResults, getCostPerResult, getObjectiveColor, getObjectiveLabel } from '../utils/format';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { DollarSign, Eye, MousePointerClick, TrendingUp, Award, AlertTriangle, ArrowRight, Activity } from 'lucide-react';
-import DataClipboard from '../components/DataClipboard';
+import DevLink from '../components/DevLink';
 
 export default function Dashboard() {
   // Aggregate account-level metrics
@@ -43,7 +43,17 @@ export default function Dashboard() {
       </div>
 
       {/* 4 Metric Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Account Summary</h3>
+          <DevLink clipboards={[
+            { title: 'Campaigns Data', toolName: 'ads_get_ad_entities', data: campaigns },
+            { title: 'Performance Trend', toolName: 'ads_insights_performance_trend', data: accountPerformanceTrend }
+          ]}>
+            <span className="font-mono">&lt;dev&gt;</span>
+          </DevLink>
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
@@ -85,10 +95,19 @@ export default function Dashboard() {
           <p className="text-[9px] text-gray-400 mt-1">Revenue: {formatCurrency(totalRevenue)}</p>
         </div>
       </div>
+      </div>
 
       {/* Performance Trend Chart */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700">
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">Performance Trend</h3>
+        <div className="flex items-center justify-between mb-1">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Performance Trend</h3>
+          <DevLink clipboards={[
+            { title: 'Performance Trend', toolName: 'ads_insights_performance_trend', data: accountPerformanceTrend },
+            { title: 'Campaigns Summary', toolName: 'ads_get_ad_entities', data: campaigns }
+          ]}>
+            <span className="font-mono">&lt;dev&gt;</span>
+          </DevLink>
+        </div>
         <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-4">ads_insights_performance_trend • time_increment: 1 • last 14 days</p>
         <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
@@ -119,9 +138,17 @@ export default function Dashboard() {
         {/* Top Campaigns */}
         <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
           <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Campaigns</h3>
-              <p className="text-[10px] text-gray-500 dark:text-gray-400">ads_get_ad_entities • level: campaign</p>
+            <div className="flex items-center gap-2">
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Campaigns</h3>
+                <p className="text-[10px] text-gray-500 dark:text-gray-400">ads_get_ad_entities • level: campaign</p>
+              </div>
+              <DevLink clipboards={[
+                { title: 'Campaigns', toolName: 'ads_get_ad_entities', data: campaigns },
+                { title: 'Opportunity Score', toolName: 'ads_get_opportunity_score', data: opportunityScore }
+              ]}>
+                <span className="font-mono">&lt;dev&gt;</span>
+              </DevLink>
             </div>
             <Link to="/campaigns" className="text-[10px] text-blue-600 dark:text-blue-400 font-medium flex items-center gap-1 hover:underline">
               View all <ArrowRight className="w-3 h-3" />
@@ -193,7 +220,15 @@ export default function Dashboard() {
 
       {/* Campaign Performance Comparison */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700">
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">Campaign Performance</h3>
+        <div className="flex items-center justify-between mb-1">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Campaign Performance</h3>
+          <DevLink clipboards={[
+            { title: 'Campaign Performance', toolName: 'ads_get_ad_entities', data: campaignSummary },
+            { title: 'Anomaly Signals', toolName: 'ads_insights_anomaly_signal', data: anomalySignals }
+          ]}>
+            <span className="font-mono">&lt;dev&gt;</span>
+          </DevLink>
+        </div>
         <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-4">Spend vs Results comparison</p>
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
@@ -209,27 +244,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Data Clipboard */}
-      <DataClipboard
-        title="Account Performance Trend"
-        toolName="ads_insights_performance_trend"
-        data={accountPerformanceTrend}
-      />
-      <DataClipboard
-        title="Campaigns"
-        toolName="ads_get_ad_entities"
-        data={campaigns}
-      />
-      <DataClipboard
-        title="Opportunity Score"
-        toolName="ads_get_opportunity_score"
-        data={opportunityScore}
-      />
-      <DataClipboard
-        title="Anomaly Signals"
-        toolName="ads_insights_anomaly_signal"
-        data={anomalySignals}
-      />
+
     </div>
   );
 }

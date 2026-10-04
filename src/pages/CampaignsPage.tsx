@@ -1,16 +1,24 @@
 import { Link } from 'react-router-dom';
-import { campaigns } from '../data/mockData';
+import { campaigns, adSets } from '../data/mockData';
 import { formatCurrency, formatNumber, getResults, getCostPerResult, getObjectiveColor, getObjectiveLabel } from '../utils/format';
 import { ExternalLink } from 'lucide-react';
-import DataClipboard from '../components/DataClipboard';
+import DevLink from '../components/DevLink';
 
 export default function CampaignsPage() {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Campaigns</h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">ads_get_ad_entities • level: campaign</p>
+        <div className="flex items-center gap-2">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Campaigns</h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">ads_get_ad_entities • level: campaign</p>
+          </div>
+          <DevLink clipboards={[
+            { title: 'Campaigns', toolName: 'ads_get_ad_entities', data: campaigns },
+            { title: 'Ad Sets', toolName: 'ads_get_ad_entities', data: adSets }
+          ]}>
+            <span className="font-mono">&lt;dev&gt;</span>
+          </DevLink>
         </div>
         <button className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors">
           <ExternalLink className="w-3.5 h-3.5" />
@@ -71,11 +79,7 @@ export default function CampaignsPage() {
         </div>
       </div>
 
-      <DataClipboard
-        title="Campaigns Data"
-        toolName="ads_get_ad_entities"
-        data={campaigns}
-      />
+
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { campaigns, adSets } from '../data/mockData';
 import { formatCurrency, formatNumber, getResults, getCostPerResult, getObjectiveColor, getObjectiveLabel } from '../utils/format';
 import { ArrowLeft } from 'lucide-react';
-import DataClipboard from '../components/DataClipboard';
+import DevLink from '../components/DevLink';
 
 export default function CampaignDetail() {
   const { campaignId } = useParams();
@@ -20,7 +20,15 @@ export default function CampaignDetail() {
         <Link to="/campaigns" className="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline mb-3">
           <ArrowLeft className="w-3 h-3" /> Back to Campaigns
         </Link>
-        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{campaign.campaign_name}</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{campaign.campaign_name}</h2>
+          <DevLink clipboards={[
+            { title: 'Campaign Data', toolName: 'ads_get_ad_entities', data: campaign },
+            { title: 'Ad Sets Data', toolName: 'ads_get_ad_entities', data: campaignAdSets }
+          ]}>
+            <span className="font-mono">&lt;dev&gt;</span>
+          </DevLink>
+        </div>
         <div className="flex items-center gap-2 mt-1">
           <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${getObjectiveColor(campaign.objective)}`}>
             {getObjectiveLabel(campaign.objective)}
@@ -107,16 +115,7 @@ export default function CampaignDetail() {
         </div>
       </div>
 
-      <DataClipboard
-        title="Campaign Data"
-        toolName="ads_get_ad_entities"
-        data={campaign}
-      />
-      <DataClipboard
-        title="Ad Sets Data"
-        toolName="ads_get_ad_entities"
-        data={campaignAdSets}
-      />
+
     </div>
   );
 }

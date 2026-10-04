@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ads } from '../data/mockData';
 import { formatCurrency, formatNumber, getResults, getCostPerResult } from '../utils/format';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
-import DataClipboard from '../components/DataClipboard';
+import DevLink from '../components/DevLink';
 
 export default function AdDetail() {
   const { adId } = useParams();
@@ -18,7 +18,15 @@ export default function AdDetail() {
         <Link to={`/adsets/${ad.adset_id}`} className="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline mb-3">
           <ArrowLeft className="w-3 h-3" /> Back to Ad Set
         </Link>
-        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{ad.ad_name}</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{ad.ad_name}</h2>
+          <DevLink clipboards={[
+            { title: 'Ad Data', toolName: 'ads_get_ad_entities', data: ad },
+            { title: 'Creative Details', toolName: 'ads_get_ad_entities', data: ad.creative }
+          ]}>
+            <span className="font-mono">&lt;dev&gt;</span>
+          </DevLink>
+        </div>
         <div className="flex items-center gap-2 mt-1">
           <span className={`text-[10px] font-medium ${ad.status === 'ACTIVE' ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400'}`}>
             {ad.status}
@@ -110,11 +118,7 @@ export default function AdDetail() {
         </div>
       </div>
 
-      <DataClipboard
-        title="Ad Data"
-        toolName="ads_get_ad_entities"
-        data={ad}
-      />
+
     </div>
   );
 }
