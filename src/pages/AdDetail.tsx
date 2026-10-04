@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ads } from '../data/mockData';
 import { formatCurrency, formatNumber, getResults, getCostPerResult } from '../utils/format';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
+import DataClipboard from '../components/DataClipboard';
 
 export default function AdDetail() {
   const { adId } = useParams();
@@ -108,6 +109,12 @@ export default function AdDetail() {
           </div>
         </div>
       </div>
+
+      <DataClipboard
+        title="Ad Data"
+        toolName="ads_get_ad_entities"
+        data={ad}
+      />
     </div>
   );
 }

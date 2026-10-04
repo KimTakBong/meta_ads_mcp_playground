@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 import { campaigns, accountPerformanceTrend, opportunityScore, anomalySignals } from '../data/mockData';
 import { formatCurrency, formatNumber, getResults, getCostPerResult, getObjectiveColor, getObjectiveLabel } from '../utils/format';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { DollarSign, Eye, MousePointerClick, TrendingUp, Award, AlertTriangle, ArrowRight } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { DollarSign, Eye, MousePointerClick, TrendingUp, Award, AlertTriangle, ArrowRight, Activity } from 'lucide-react';
+import DataClipboard from '../components/DataClipboard';
 
 export default function Dashboard() {
   // Aggregate account-level metrics
@@ -15,11 +16,21 @@ export default function Dashboard() {
     return sum + (rev ? parseInt(rev.value) : 0);
   }, 0);
   const avgROAS = totalSpend > 0 ? (totalRevenue / totalSpend).toFixed(1) : '0';
+  const avgCTR = ((totalLinkClicks / totalImpressions) * 100).toFixed(2);
+  const avgCPC = totalLinkClicks > 0 ? Math.round(totalSpend / totalLinkClicks) : 0;
 
   const chartData = accountPerformanceTrend.map(d => ({
     date: d.date_start.split('-').slice(1).join('/'),
     spend: parseInt(d.spend),
     conversions: parseInt(d.conversions),
+    impressions: parseInt(d.impressions),
+  }));
+
+  const campaignSummary = campaigns.map(c => ({
+    name: c.campaign_name.split(' - ')[1] || c.campaign_name,
+    spend: parseInt(c.spend),
+    results: getResults(c.actions),
+    roas: c.purchase_roas || 0,
   }));
 
   return (
@@ -27,7 +38,7 @@ export default function Dashboard() {
       <div>
         <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Dashboard</h2>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-          Summary • ads_get_ad_entities (level: campaign) aggregated
+          Account-level summary • ads_get_ad_entities (level: campaign) aggregated
         </p>
       </div>
 
@@ -41,6 +52,7 @@ export default function Dashboard() {
             <span className="text-[11px] text-gray-500 dark:text-gray-400">Amount Spent</span>
           </div>
           <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{formatCurrency(totalSpend)}</p>
+          <p className="text-[9px] text-gray-400 mt-1">Daily avg: {formatCurrency(totalSpend / 14)}</p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
           <div className="flex items-center gap-2 mb-2">
@@ -50,6 +62,7 @@ export default function Dashboard() {
             <span className="text-[11px] text-gray-500 dark:text-gray-400">Impressions</span>
           </div>
           <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{formatNumber(totalImpressions)}</p>
+          <p className="text-[9px] text-gray-400 mt-1">CPM: {formatCurrency(Math.round(totalSpend / (totalImpressions / 1000)))}</p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
           <div className="flex items-center gap-2 mb-2">
@@ -59,6 +72,7 @@ export default function Dashboard() {
             <span className="text-[11px] text-gray-500 dark:text-gray-400">Link Clicks</span>
           </div>
           <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{formatNumber(totalLinkClicks)}</p>
+          <p className="text-[9px] text-gray-400 mt-1">CTR: {avgCTR}%</p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
           <div className="flex items-center gap-2 mb-2">
@@ -68,14 +82,15 @@ export default function Dashboard() {
             <span className="text-[11px] text-gray-500 dark:text-gray-400">ROAS</span>
           </div>
           <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{avgROAS}x</p>
+          <p className="text-[9px] text-gray-400 mt-1">Revenue: {formatCurrency(totalRevenue)}</p>
         </div>
       </div>
 
       {/* Performance Trend Chart */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700">
         <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">Performance Trend</h3>
-        <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-4">ads_insights_performance_trend • time_increment: 1</p>
-        <div className="h-48">
+        <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-4">ads_insights_performance_trend • time_increment: 1 • last 14 days</p>
+        <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
               <defs>
@@ -83,18 +98,23 @@ export default function Dashboard() {
                   <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
                   <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                 </linearGradient>
+                <linearGradient id="gradConv" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
               <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '11px' }} />
               <Area type="monotone" dataKey="spend" name="Spend" stroke="#3b82f6" strokeWidth={2} fill="url(#gradSpend)" />
+              <Area type="monotone" dataKey="conversions" name="Conversions" stroke="#10b981" strokeWidth={2} fill="url(#gradConv)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Campaigns Summary + Opportunity */}
+      {/* Campaign Summary + Opportunity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Top Campaigns */}
         <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
@@ -127,7 +147,7 @@ export default function Dashboard() {
                 </div>
                 <div className="text-right ml-4">
                   <p className="text-xs font-bold text-gray-900 dark:text-gray-100">{formatCurrency(c.spend)}</p>
-                  <p className="text-[10px] text-gray-500 dark:text-gray-400">{formatNumber(getResults(c.actions))} results</p>
+                  <p className="text-[10px] text-gray-500 dark:text-gray-400">{formatNumber(getResults(c.actions))} results • {c.purchase_roas ? `${c.purchase_roas}x` : '—'}</p>
                 </div>
               </Link>
             ))}
@@ -170,6 +190,46 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Campaign Performance Comparison */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">Campaign Performance</h3>
+        <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-4">Spend vs Results comparison</p>
+        <div className="h-48">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={campaignSummary} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+              <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '11px' }} />
+              <Bar dataKey="spend" name="Spend" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="results" name="Results" fill="#10b981" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Data Clipboard */}
+      <DataClipboard
+        title="Account Performance Trend"
+        toolName="ads_insights_performance_trend"
+        data={accountPerformanceTrend}
+      />
+      <DataClipboard
+        title="Campaigns"
+        toolName="ads_get_ad_entities"
+        data={campaigns}
+      />
+      <DataClipboard
+        title="Opportunity Score"
+        toolName="ads_get_opportunity_score"
+        data={opportunityScore}
+      />
+      <DataClipboard
+        title="Anomaly Signals"
+        toolName="ads_insights_anomaly_signal"
+        data={anomalySignals}
+      />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { campaigns, adSets } from '../data/mockData';
 import { formatCurrency, formatNumber, getResults, getCostPerResult, getObjectiveColor, getObjectiveLabel } from '../utils/format';
 import { ArrowLeft } from 'lucide-react';
+import DataClipboard from '../components/DataClipboard';
 
 export default function CampaignDetail() {
   const { campaignId } = useParams();
@@ -105,6 +106,17 @@ export default function CampaignDetail() {
           </table>
         </div>
       </div>
+
+      <DataClipboard
+        title="Campaign Data"
+        toolName="ads_get_ad_entities"
+        data={campaign}
+      />
+      <DataClipboard
+        title="Ad Sets Data"
+        toolName="ads_get_ad_entities"
+        data={campaignAdSets}
+      />
     </div>
   );
 }

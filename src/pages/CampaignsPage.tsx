@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { campaigns } from '../data/mockData';
 import { formatCurrency, formatNumber, getResults, getCostPerResult, getObjectiveColor, getObjectiveLabel } from '../utils/format';
 import { ExternalLink } from 'lucide-react';
+import DataClipboard from '../components/DataClipboard';
 
 export default function CampaignsPage() {
   return (
@@ -69,6 +70,12 @@ export default function CampaignsPage() {
           </table>
         </div>
       </div>
+
+      <DataClipboard
+        title="Campaigns Data"
+        toolName="ads_get_ad_entities"
+        data={campaigns}
+      />
     </div>
   );
 }
